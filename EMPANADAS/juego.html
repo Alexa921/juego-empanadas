@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nivel 1 - Empanadas</title>
+    <link rel="stylesheet" href="css/juego.css">
+</head>
+<body>
+    <main class="juego">
+
+        <!-- =========================
+             BARRA SUPERIOR (HUD)
+        ========================== -->
+        <header class="barra-superior">
+            <div class="puntos">
+                💰 <span id="puntos">0</span>
+            </div>
+            <div class="nivel-actual">
+                NIVEL 1
+            </div>
+            <div class="tiempo">
+                ⏱️ <span id="tiempo">60</span>
+            </div>
+        </header>
+
+        <!-- =========================
+             CLIENTES
+        ========================= -->
+        <section class="clientes">
+            <!-- CLIENTE 1 -->
+            <div class="cliente cliente-1">
+                <div class="pedido">
+                    <p>Una empanada de carne</p>
+                    <img src="img/rellenos/carne.png" alt="Carne" class="icono-pedido">
+                </div>
+                <img src="img/clientes/cliente1.png" alt="Cliente 1" class="imagen-cliente">
+            </div>
+
+            <!-- CLIENTE 2 -->
+            <div class="cliente cliente-2">
+                <div class="pedido">
+                    <p>Una empanada de pollo</p>
+                    <img src="img/rellenos/pollo.png" alt="Pollo" class="icono-pedido">
+                </div>
+                <img src="img/clientes/cliente2.png" alt="Cliente 2" class="imagen-cliente">
+            </div>
+
+            <!-- CLIENTE 3 -->
+            <div class="cliente cliente-3">
+                <div class="pedido">
+                    <p>Una empanada de queso</p>
+                    <img src="img/rellenos/queso.png" alt="Queso" class="icono-pedido">
+                </div>
+                <img src="img/clientes/cliente3.png" alt="Cliente 3" class="imagen-cliente">
+            </div>
+        </section>
+
+        <!-- =========================
+             MOSTRADOR CON MESA/FREIDORA DE FONDO
+        ========================== -->
+        <div class="mostrador-cocina">
+
+            <!-- PREPARACIÓN -->
+            <section class="preparacion">
+
+                <div class="zona-masa">
+                    <img id="masa" src="img/masa/masa.png" alt="Masa">
+                </div>
+
+                <!-- CONTENEDOR DE LOS 3 INGREDIENTES -->
+                <div class="lista-ingredientes">
+                    <div class="ingrediente">
+                        <button id="btn-carne" type="button">
+                            <img src="img/rellenos/carne.png" alt="Carne">
+                        </button>
+                        <p>Carne</p>
+                    </div>
+
+                    <div class="ingrediente">
+                        <button id="btn-pollo" type="button">
+                            <img src="img/rellenos/pollo.png" alt="Pollo">
+                        </button>
+                        <p>Pollo</p>
+                    </div>
+
+                    <div class="ingrediente">
+                        <button id="btn-queso" type="button">
+                            <img src="img/rellenos/queso.png" alt="Queso">
+                        </button>
+                        <p>Queso</p>
+                    </div>
+                </div>
+
+                <button id="btn-cerrar" class="boton-accion" type="button">
+                    CERRAR EMPANADA
+                </button>
+            </section>
+
+            <!-- FREIDORA / COCCIÓN -->
+            <section class="coccion">
+
+                <div class="zona-freidora">
+                    <img id="empanada" src="img/empanada/empanada-cerrada.png" alt="Empanada" class="empanada">
+                </div>
+
+                <div class="controles-coccion">
+                    <button id="btn-cocinar" class="boton-accion" type="button">
+                        COCINAR
+                    </button>
+                    <button id="btn-sacar" class="boton-accion" type="button">
+                        SACAR
+                    </button>
+                </div>
+            </section>
+
+            <!-- ENTREGA -->
+            <section class="entrega">
+
+                <img id="empanada-final" src="img/empanada/empanada-dorada.png" alt="Empanada terminada">
+
+                <button id="btn-entregar" class="boton-accion" type="button">
+                    ENTREGAR
+                </button>
+            </section>
+
+        </div>
+
+        <!-- =========================
+             MENSAJE Y NAVEGACIÓN
+        ========================== -->
+        <p id="mensaje" class="mensaje">
+            ¡Prepara la empanada!
+        </p>
+
+        <!-- Opción directa en HTML -->
+        <a href="niveles.html">
+            <button class="btn-volver">Volver</button>
+        </a>
+
+    </main>
+
+    <script src="juego.js"></script>
+</body>
+</html>

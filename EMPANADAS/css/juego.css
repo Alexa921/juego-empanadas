@@ -1,0 +1,357 @@
+/* =========================
+   CONFIGURACIÓN GENERAL
+========================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    font-family: 'Arial Black', Arial, sans-serif;
+    overflow: hidden;
+    user-select: none;
+}
+
+.juego {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    background-image: url("../img/escenario/fondo-nivel1.png");
+    background-size: cover;
+    background-position: center;
+}
+
+/* =========================
+   BARRA SUPERIOR (HUD)
+========================= */
+.barra-superior {
+    position: absolute;
+    top: 15px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 20;
+}
+
+.puntos,
+.nivel-actual,
+.tiempo {
+    padding: 8px 20px;
+    border-radius: 25px;
+    background-color: rgba(0, 0, 0, 0.75);
+    border: 2px solid #fff;
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+/* =========================
+   ZONA CLIENTES
+========================= */
+.clientes {
+    position: absolute;
+    top: 250px;
+    left: 0;
+    width: 100%;
+    height: calc(50vh - 80px);
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    padding: 0 8%;
+    z-index: 5;
+}
+
+.cliente {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.imagen-cliente {
+    height: 300px;
+    width: auto;
+    object-fit: contain;
+}
+
+.pedido {
+    position: absolute;
+    bottom: 105%;
+    background-color: #ffffff;
+    border: 3px solid #333;
+    border-radius: 15px;
+    padding: 8px 12px;
+    text-align: center;
+    min-width: 120px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.pedido p {
+    margin: 0;
+    font-size: 12px;
+    color: #333;
+    font-weight: bold;
+}
+
+.icono-pedido {
+    width: 35px;
+    height: 35px;
+    margin-top: 5px;
+}
+
+/* =========================
+   MOSTRADOR (MESA + FREIDORA DE FONDO)
+========================= */
+.mostrador-cocina {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 52vh;
+    background-image: url("../img/escenario/mesa-freidora.png");
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    
+    /* Dividimos la mesa en 3 columnas iguales */
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    align-items: flex-end;
+    padding: 20px 30px 30px 30px;
+    z-index: 10;
+}
+
+/* Base uniforme para las 3 estaciones */
+.preparacion,
+.entrega,
+.coccion {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
+    margin: 0; /* Limpiamos márgenes que puedan causar empujones */
+}
+
+/* =========================================================
+   ASIGNACIÓN EXPLICITA DE COLUMNAS (REORDENAMIENTO)
+========================================================= */
+
+/* Columna 1 (Izquierda): Prepara tu masa */
+/* Columna 1 (Izquierda): Prepara tu masa */
+.preparacion {
+    grid-column: 1; 
+    /* Derecha (85px) y Abajo (20px) */
+    transform: translate(85px, 160px); 
+}
+
+/* Columna 2 (Centro): Plato listo / Entrega */
+.entrega {
+    grid-column: 2; 
+    /* Derecha (30px) y Arriba (-100px) */
+    transform: translate(90px, -100px); 
+}
+
+/* Columna 3 (Derecha): Freidora / Cocción */
+.coccion {
+    grid-column: 3; 
+    /* Derecha (60px) y Abajo (15px) */
+    transform: translate(60px, 25px); 
+}
+
+/* --- REORGANIZACIÓN DE POSICIONES --- */
+
+/* 1. Prepara tu empanada (Movido a la derecha) */
+.preparacion {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
+    margin-left: 18%; 
+}
+
+/* 2. Plato listo / Entrega (Ubicado en el centro) */
+.entrega {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
+    margin-left: auto;
+    margin-right: 60%; 
+    margin-bottom: 8.5%; 
+}
+
+/* 3. Freidora / Cocción (Movida más hacia la derecha) */
+.coccion {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
+    margin-right: 20%; 
+}
+
+.preparacion h2,
+.coccion h2,
+.entrega h2 {
+    color: #fff;
+    font-size: 16px;
+    text-shadow: 2px 2px 4px #000;
+    margin-bottom: 8px;
+}
+
+/* --- ESTACIÓN PREPARACIÓN Y 3 INGREDIENTES --- */
+.zona-masa {
+    width: 180px;
+    height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.zona-masa img {
+    max-width: 150px;
+}
+
+.lista-ingredientes {
+    display: flex;
+    gap: 15px;
+    margin: 10px 0;
+}
+
+.ingrediente {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.ingrediente button {
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    padding: 5px;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+}
+
+.ingrediente button:hover {
+    transform: scale(1.1);
+}
+
+.ingrediente button:active {
+    transform: scale(0.9);
+}
+
+.ingrediente img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+}
+
+.ingrediente p {
+    color: #fff;
+    font-size: 12px;
+    text-shadow: 1px 1px 3px #000;
+    margin-top: 2px;
+}
+
+/* --- ESTACIÓN FREIDORA --- */
+.zona-freidora {
+    position: relative;
+    width: 180px;
+    height: 130px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.empanada {
+    width: 85px;
+}
+
+.controles-coccion {
+    display: flex;
+    gap: 8px;
+}
+
+/* --- ESTACIÓN ENTREGA --- */
+.entrega img {
+    width: 85px;
+    margin-bottom: 10px;
+}
+
+/* =========================
+   BOTONES Y HUD INFERIOR
+========================= */
+.boton-accion {
+    padding: 8px 16px;
+    border: 2px solid #fff;
+    border-radius: 12px;
+    background-color: #f5a623;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #b8750a;
+    transition: all 0.1s ease;
+}
+
+.boton-accion:active {
+    box-shadow: 0 1px 0 #b8750a;
+    transform: translateY(3px);
+}
+
+/* Botón volver */
+
+.btn-volver {
+    position: absolute;
+
+    z-index: 4;
+
+    bottom: 30px;
+    left: 30px;
+
+    padding: 18px 40px;
+
+    border: none;
+    border-radius: 20px;
+
+    background-color: #f5a623;
+    color: white;
+
+    font-size: 22px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: transform 0.2s ease;
+}
+
+.btn-volver:hover {
+    transform: scale(1.08);
+}
+
+.mensaje {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    padding: 8px 16px;
+    background-color: rgba(0,0,0,0.85);
+    color: #fff;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: bold;
+    z-index: 30;
+    border: 1px solid #f5a623;
+}
