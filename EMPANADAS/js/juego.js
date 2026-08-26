@@ -127,14 +127,6 @@ let clientesSeFueron = [];
 // ================================
 // DINERO DE CADA CLIENTE
 // ================================
-//
-// false = todavía no ha generado dinero
-// true  = ya generó su billete
-//
-// Cada cliente tiene su propia posición
-// dentro de este arreglo.
-//
-// ================================
 
 let dineroClientes = [];
 
@@ -401,9 +393,9 @@ function cambiarPersonajeVisual(
     }
 
     const personajes = [
-        "cliente1.png",
-        "cliente2.png",
-        "cliente3.png"
+        "cliente1-mex.png",
+        "cliente2-mex.png",
+        "cliente3-mex.png"
     ];
 
     let personajeNuevo;
@@ -460,10 +452,6 @@ function prepararClientes() {
 
         clientesSeFueron[i] =
             false;
-
-        // IMPORTANTE:
-        // Cada cliente comienza sin haber
-        // generado todavía su dinero.
 
         dineroClientes[i] =
             false;
@@ -1214,11 +1202,6 @@ function reemplazarClienteAtendido(
             ] =
                 Date.now();
 
-
-            // IMPORTANTE:
-            // El cliente nuevo todavía no
-            // ha generado dinero.
-
             dineroClientes[
                 siguiente
             ] = false;
@@ -1315,16 +1298,6 @@ function marcarClienteAtendido(
 // ================================
 // CREAR DINERO
 // ================================
-//
-// CORREGIDO:
-//
-// Cada cliente tiene derecho a un
-// billete de $100.
-//
-// El dinero se identifica mediante
-// el número del cliente.
-//
-// ================================
 
 function crearDinero(
     posicionVisual,
@@ -1353,11 +1326,6 @@ function crearDinero(
     // ================================
     // EVITAR DUPLICAR DINERO
     // ================================
-    //
-    // SOLO este cliente específico
-    // queda bloqueado después de crear
-    // su billete.
-    //
 
     if (
         dineroClientes[
@@ -1572,13 +1540,6 @@ function crearDinero(
     // ================================
     // AHORA SÍ MARCAR AL CLIENTE
     // ================================
-    //
-    // Esto es importante:
-    // primero creamos el billete y lo
-    // agregamos al HTML.
-    //
-    // Después lo marcamos como generado.
-    //
 
     dineroClientes[
         numeroCliente
