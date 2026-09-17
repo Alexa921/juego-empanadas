@@ -374,57 +374,28 @@ body {
 .coccion {
     grid-column: 3;
 
-    margin-right: 20%;
+    margin-right: 10%;
 
-    /*
-       ESTA ES LA POSICIÓN ORIGINAL
-       DEL NIVEL 1.
-    */
-    transform: translate(60px, 25px);
+    transform: translate(30px, 20px);
 
-    /*
-       Por defecto queda como una sola
-       estación centrada.
-    */
     display: flex;
 
-    flex-direction: column;
-
-    align-items: center;
-
-    justify-content: flex-end;
-
-    gap: 0;
-}
-
-
-/* =========================
-   PARRILLAS DEL NIVEL 2
-========================= */
-
-/*
-   Cuando existen dos parrillas,
-   solamente ellas se colocan una
-   al lado de la otra.
-
-   La estación .coccion NO se desplaza.
-*/
-
-.coccion:has(.parrilla) {
     flex-direction: row;
 
     align-items: flex-end;
 
     justify-content: center;
 
-    gap: 70px;
+    gap: 25px;
 }
 
 
+/* =========================
+   PARRILLAS
+========================= */
+
 .parrilla {
     position: relative;
-
-    width: 135px;
 
     display: flex;
 
@@ -434,27 +405,26 @@ body {
 
     justify-content: flex-end;
 
-    flex-shrink: 0;
+    height: 100%;
+
+    min-width: 180px;
 }
 
 
 /* =========================
-   TÍTULO DE CADA PARRILLA
+   TÍTULO DE LA PARRILLA
 ========================= */
 
 .parrilla h3 {
-    margin-bottom: 6px;
-
     color: #fff;
 
-    font-size: 12px;
+    font-size: 14px;
+
+    text-shadow: 2px 2px 4px #000;
+
+    margin-bottom: 5px;
 
     text-align: center;
-
-    white-space: nowrap;
-
-    text-shadow:
-        2px 2px 4px #000;
 }
 
 
@@ -569,8 +539,8 @@ body {
 .zona-freidora {
     position: relative;
 
-    width: 130px;
-    height: 100px;
+    width: 160px;
+    height: 120px;
 
     display: flex;
 
@@ -578,26 +548,8 @@ body {
     align-items: center;
 }
 
-
-/* =========================
-   EMPANADA DENTRO DE LA
-   FREIDORA / PARRILLA
-========================= */
-
-/*
-   Aumentamos el tamaño de la empanada
-   para aprovechar mejor el espacio
-   disponible dentro de la parrilla.
-*/
-
 .empanada {
-    width: 105px;
-
-    max-width: 105px;
-
-    height: auto;
-
-    object-fit: contain;
+    width: 75px;
 }
 
 
@@ -608,26 +560,7 @@ body {
 .controles-coccion {
     display: flex;
 
-    flex-direction: row;
-
-    gap: 5px;
-
-    justify-content: center;
-
-    align-items: center;
-}
-
-
-/* =========================
-   BOTONES DE LAS PARRILLAS
-========================= */
-
-.parrilla .boton-accion {
-    padding: 8px 12px;
-
-    font-size: 11px;
-
-    white-space: nowrap;
+    gap: 6px;
 }
 
 
@@ -955,3 +888,4 @@ body {
     }
 
 }
+

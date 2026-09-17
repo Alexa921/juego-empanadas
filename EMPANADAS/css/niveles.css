@@ -18,7 +18,9 @@
 }
 
 
-/* Fondo */
+/* =========================
+   FONDO
+========================= */
 
 .fondo-niveles {
     position: absolute;
@@ -35,7 +37,9 @@
 }
 
 
-/* Título */
+/* =========================
+   TÍTULO
+========================= */
 
 .titulo-niveles {
     position: absolute;
@@ -52,7 +56,9 @@
 }
 
 
-/* Contenedor de niveles */
+/* =========================
+   CONTENEDOR DE NIVELES
+========================= */
 
 .niveles {
     position: relative;
@@ -64,7 +70,9 @@
 }
 
 
-/* Botones de nivel */
+/* =========================
+   BOTONES DE NIVEL
+========================= */
 
 .nivel {
     position: absolute;
@@ -86,58 +94,91 @@
     justify-content: center;
 
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.4);
+
+    transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
 
-/* Nivel disponible */
+/* =========================
+   NIVEL DESBLOQUEADO
+========================= */
 
-.nivel-1 {
+.nivel.desbloqueado {
     background-color: #f5a623;
 
+    color: white;
+
+    cursor: pointer;
+}
+
+
+/* Efecto de nivel desbloqueado */
+
+.nivel.desbloqueado:hover {
+    transform: scale(1.1);
+}
+
+
+/* =========================
+   NIVEL BLOQUEADO
+========================= */
+
+.nivel.bloqueado {
+    background-color: #777;
+
+    color: white;
+
+    cursor: not-allowed;
+}
+
+
+/* =========================
+   POSICIONES
+========================= */
+
+/* Nivel 1 */
+
+.nivel-1 {
     top: 80%;
     left: 15.5%;
 }
 
 
-/* Niveles bloqueados */
+/* Nivel 2 */
 
 .nivel-2 {
-    background-color: #777;
-
     top: 65%;
     left: 34.6%;
 }
 
-.nivel-3 {
-    background-color: #777;
 
+/* Nivel 3 */
+
+.nivel-3 {
     top: 38%;
     left: 42.3%;
 }
 
-.nivel-4 {
-    background-color: #777;
 
+/* Nivel 4 */
+
+.nivel-4 {
     top: 23.5%;
     left: 60.2%;
 }
 
-.nivel-5 {
-    background-color: #777;
 
+/* Nivel 5 */
+
+.nivel-5 {
     top: 54.5%;
     left: 68.3%;
 }
 
 
-/* Efecto al pasar el mouse */
-
-.nivel-1:hover {
-    transform: scale(1.1);
-}
-
-
-/* Botón volver */
+/* =========================
+   BOTÓN VOLVER
+========================= */
 
 .btn-volver {
     position: absolute;
