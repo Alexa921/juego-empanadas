@@ -4,355 +4,384 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Nivel 2 - Empanadas</title>
 
-    <link rel="stylesheet" href="css/juego.css">
+    <link rel="stylesheet" href="css/nivel2.css">
 </head>
 
 <body>
 
-<main class="juego">
+    <main class="juego">
 
-    <!-- =========================
-         BARRA SUPERIOR
-    ========================== -->
+        <!-- =========================
+             BARRA SUPERIOR
+        ========================== -->
 
-    <header class="barra-superior">
+        <header class="barra-superior">
 
-        <div class="puntos">
-            💰 $<span id="puntos">0</span>
-        </div>
-
-        <div class="nivel-actual">
-            NIVEL 2
-        </div>
-
-        <div class="tiempo">
-            ⏱️ <span id="tiempo">70</span>
-        </div>
-
-    </header>
-
-
-    <!-- =========================
-         MENSAJE
-    ========================== -->
-
-    <p id="mensaje" class="mensaje">
-        ¡Escoge el relleno de la empanada!
-    </p>
-
-
-    <!-- =========================
-         CLIENTES
-    ========================== -->
-
-    <section class="clientes">
-
-        <div class="cliente cliente-1">
-
-            <div class="pedido">
-
-                <p>Una empanada de carne</p>
-
-                <img
-                    src="img/rellenos/carne.png"
-                    alt="Carne"
-                    class="icono-pedido"
-                >
-
+            <div class="puntos">
+                💰 $<span id="puntos">0</span>
             </div>
 
-            <img
-                src="img/clientes/cliente1-mex.png"
-                alt="Cliente 1"
-                class="imagen-cliente"
-            >
-
-        </div>
-
-
-        <div class="cliente cliente-2">
-
-            <div class="pedido">
-
-                <p>Una empanada de pollo</p>
-
-                <img
-                    src="img/rellenos/pollo.png"
-                    alt="Pollo"
-                    class="icono-pedido"
-                >
-
+            <div class="nivel-actual">
+                NIVEL 2
             </div>
 
-            <img
-                src="img/clientes/cliente2-mex.png"
-                alt="Cliente 2"
-                class="imagen-cliente"
-            >
-
-        </div>
-
-
-        <div class="cliente cliente-3">
-
-            <div class="pedido">
-
-                <p>Una empanada de queso</p>
-
-                <img
-                    src="img/rellenos/queso.png"
-                    alt="Queso"
-                    class="icono-pedido"
-                >
-
+            <div class="tiempo">
+                ⏱️ <span id="tiempo">70</span>
             </div>
 
-            <img
-                src="img/clientes/cliente3-mex.png"
-                alt="Cliente 3"
-                class="imagen-cliente"
-            >
-
-        </div>
-
-    </section>
-
-
-    <!-- =========================
-         MOSTRADOR / COCINA
-    ========================== -->
-
-    <div class="mostrador-cocina">
+        </header>
 
 
         <!-- =========================
-             PREPARACIÓN
+             MENSAJE
         ========================== -->
 
-        <section class="preparacion">
-
-            <!-- MASA -->
-
-            <div class="zona-masa">
-
-                <img
-                    id="masa"
-                    src="img/masa/masa.png"
-                    alt="Masa"
-                >
-
-            </div>
-
-
-            <!-- INGREDIENTES -->
-
-            <div class="lista-ingredientes">
-
-                <div class="ingrediente">
-
-                    <button
-                        id="btn-carne"
-                        type="button"
-                    >
-                        <img
-                            src="img/rellenos/carne.png"
-                            alt="Carne"
-                        >
-                    </button>
-
-                    <p>Carne</p>
-
-                </div>
-
-
-                <div class="ingrediente">
-
-                    <button
-                        id="btn-pollo"
-                        type="button"
-                    >
-                        <img
-                            src="img/rellenos/pollo.png"
-                            alt="Pollo"
-                        >
-                    </button>
-
-                    <p>Pollo</p>
-
-                </div>
-
-
-                <div class="ingrediente">
-
-                    <button
-                        id="btn-queso"
-                        type="button"
-                    >
-                        <img
-                            src="img/rellenos/queso.png"
-                            alt="Queso"
-                        >
-                    </button>
-
-                    <p>Queso</p>
-
-                </div>
-
-            </div>
-
-
-            <!-- CERRAR -->
-
-            <button
-                id="btn-cerrar"
-                class="boton-accion"
-                type="button"
-            >
-                CERRAR EMPANADA
-            </button>
-
-        </section>
+        <p id="mensaje" class="mensaje">
+            ¡Escoge el relleno de la empanada!
+        </p>
 
 
         <!-- =========================
-             COCCIÓN
-             DOS PARRILLAS
+             CLIENTES
         ========================== -->
 
-        <section class="coccion">
+        <section class="clientes">
 
+            <!-- CLIENTE 1 -->
 
-            <!-- PARRILLA 1 -->
+            <div class="cliente cliente-1">
 
-            <div class="parrilla">
+                <div class="pedido">
 
-                <div class="zona-freidora">
+                    <p>
+                        Una empanada de carne
+                    </p>
 
                     <img
-                        id="empanada-1"
-                        src="img/empanada/empanada-cerrada.png"
-                        alt="Empanada"
-                        class="empanada"
+                        src="img/rellenos/carne.png"
+                        alt="Carne"
+                        class="icono-pedido"
                     >
 
                 </div>
 
-                <div class="controles-coccion">
-
-                    <button
-                        id="btn-cocinar-1"
-                        class="boton-accion"
-                        type="button"
-                    >
-                        COCINAR
-                    </button>
-
-                    <button
-                        id="btn-sacar-1"
-                        class="boton-accion"
-                        type="button"
-                    >
-                        SACAR
-                    </button>
-
-                </div>
+                <img
+                    src="img/clientes/cliente1-mex.png"
+                    alt="Cliente 1"
+                    class="imagen-cliente"
+                >
 
             </div>
 
 
-            <!-- PARRILLA 2 -->
+            <!-- CLIENTE 2 -->
 
-            <div class="parrilla">
+            <div class="cliente cliente-2">
 
-                <div class="zona-freidora">
+                <div class="pedido">
+
+                    <p>
+                        Una empanada de pollo
+                    </p>
 
                     <img
-                        id="empanada-2"
-                        src="img/empanada/empanada-cerrada.png"
-                        alt="Empanada"
-                        class="empanada"
+                        src="img/rellenos/pollo.png"
+                        alt="Pollo"
+                        class="icono-pedido"
                     >
 
                 </div>
 
-                <div class="controles-coccion">
-
-                    <button
-                        id="btn-cocinar-2"
-                        class="boton-accion"
-                        type="button"
-                    >
-                        COCINAR
-                    </button>
-
-                    <button
-                        id="btn-sacar-2"
-                        class="boton-accion"
-                        type="button"
-                    >
-                        SACAR
-                    </button>
-
-                </div>
+                <img
+                    src="img/clientes/cliente2-mex.png"
+                    alt="Cliente 2"
+                    class="imagen-cliente"
+                >
 
             </div>
 
+
+            <!-- CLIENTE 3 -->
+
+            <div class="cliente cliente-3">
+
+                <div class="pedido">
+
+                    <p>
+                        Una empanada de queso
+                    </p>
+
+                    <img
+                        src="img/rellenos/queso.png"
+                        alt="Queso"
+                        class="icono-pedido"
+                    >
+
+                </div>
+
+                <img
+                    src="img/clientes/cliente3-mex.png"
+                    alt="Cliente 3"
+                    class="imagen-cliente"
+                >
+
+            </div>
 
         </section>
 
 
         <!-- =========================
-             ENTREGA
+             MOSTRADOR / COCINA
         ========================== -->
 
-        <section class="entrega">
-
-            <img
-                id="empanada-final"
-                src="img/empanada/empanada-dorada.png"
-                alt="Empanada terminada"
-            >
-
-            <button
-                id="btn-entregar"
-                class="boton-accion"
-                type="button"
-            >
-                ENTREGAR
-            </button>
-
-        </section>
+        <div class="mostrador-cocina">
 
 
-    </div>
+            <!-- =========================
+                 PREPARACIÓN
+            ========================== -->
+
+            <section class="preparacion">
+
+                <!-- MASA -->
+
+                <div class="zona-masa">
+
+                    <img
+                        id="masa"
+                        src="img/masa/masa.png"
+                        alt="Masa"
+                    >
+
+                </div>
 
 
-    <!-- =========================
-         VOLVER
-    ========================== -->
+                <!-- INGREDIENTES -->
 
-    <a
-        href="niveles.html"
-        class="enlace-volver enlace-transicion"
-    >
+                <div class="lista-ingredientes">
 
-        <button
-            class="btn-volver"
-            type="button"
+
+                    <!-- CARNE -->
+
+                    <div class="ingrediente">
+
+                        <button
+                            id="btn-carne"
+                            type="button"
+                        >
+
+                            <img
+                                src="img/rellenos/carne.png"
+                                alt="Carne"
+                            >
+
+                        </button>
+
+                        <p>
+                            Carne
+                        </p>
+
+                    </div>
+
+
+                    <!-- POLLO -->
+
+                    <div class="ingrediente">
+
+                        <button
+                            id="btn-pollo"
+                            type="button"
+                        >
+
+                            <img
+                                src="img/rellenos/pollo.png"
+                                alt="Pollo"
+                            >
+
+                        </button>
+
+                        <p>
+                            Pollo
+                        </p>
+
+                    </div>
+
+
+                    <!-- QUESO -->
+
+                    <div class="ingrediente">
+
+                        <button
+                            id="btn-queso"
+                            type="button"
+                        >
+
+                            <img
+                                src="img/rellenos/queso.png"
+                                alt="Queso"
+                            >
+
+                        </button>
+
+                        <p>
+                            Queso
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- CERRAR EMPANADA -->
+
+                <button
+                    id="btn-cerrar"
+                    class="boton-accion"
+                    type="button"
+                >
+                    CERRAR EMPANADA
+                </button>
+
+            </section>
+
+
+            <!-- =========================
+                 COCCIÓN - DOS PARRILLAS
+            ========================== -->
+
+            <section class="coccion">
+
+
+                <!-- PARRILLA 1 -->
+
+                <div class="parrilla">
+
+                    <div class="zona-freidora">
+
+                        <img
+                            id="empanada-1"
+                            src="img/empanada/empanada-cerrada.png"
+                            alt="Empanada"
+                            class="empanada"
+                        >
+
+                    </div>
+
+
+                    <div class="controles-coccion">
+
+                        <button
+                            id="btn-cocinar-1"
+                            class="boton-accion"
+                            type="button"
+                        >
+                            COCINAR
+                        </button>
+
+                        <button
+                            id="btn-sacar-1"
+                            class="boton-accion"
+                            type="button"
+                        >
+                            SACAR
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PARRILLA 2 -->
+
+                <div class="parrilla">
+
+                    <div class="zona-freidora">
+
+                        <img
+                            id="empanada-2"
+                            src="img/empanada/empanada-cerrada.png"
+                            alt="Empanada"
+                            class="empanada"
+                        >
+
+                    </div>
+
+
+                    <div class="controles-coccion">
+
+                        <button
+                            id="btn-cocinar-2"
+                            class="boton-accion"
+                            type="button"
+                        >
+                            COCINAR
+                        </button>
+
+                        <button
+                            id="btn-sacar-2"
+                            class="boton-accion"
+                            type="button"
+                        >
+                            SACAR
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                 ENTREGA
+            ========================== -->
+
+            <section class="entrega">
+
+                <img
+                    id="empanada-final"
+                    src="img/empanada/empanada-dorada.png"
+                    alt="Empanada terminada"
+                >
+
+                <button
+                    id="btn-entregar"
+                    class="boton-accion"
+                    type="button"
+                >
+                    ENTREGAR
+                </button>
+
+            </section>
+
+        </div>
+
+
+        <!-- =========================
+             VOLVER
+        ========================== -->
+
+        <a
+            href="niveles.html"
+            class="enlace-volver enlace-transicion"
         >
-            VOLVER
-        </button>
 
-    </a>
+            <button
+                class="btn-volver"
+                type="button"
+            >
+                VOLVER
+            </button>
+
+        </a>
+
+    </main>
 
 
-</main>
-
-
-<script src="js/nivel2.js"></script>
+    <script src="js/nivel2.js"></script>
 
 </body>
+
 </html>

@@ -953,8 +953,7 @@ btnCerrar.addEventListener(
 
 
         // ================================
-        // COLOCAR INMEDIATAMENTE
-        // EN LA PARRILLA LIBRE
+        // COLOCAR EN PARRILLA LIBRE
         // ================================
 
         colocarEmpanadaEnParrilla(
@@ -1048,7 +1047,7 @@ function colocarEmpanadaEnParrilla(
 
 
     // ================================
-    // YA NO ESTÁ EN PREPARACIÓN
+    // REINICIAR PREPARACIÓN
     // ================================
 
     empanadaCerrada =
@@ -1469,7 +1468,7 @@ function sacarDeParrilla(
 
 
     // ================================
-    // COMPROBAR SI ESTÁ QUEMADA
+    // SI ESTÁ QUEMADA
     // ================================
 
     if (parrilla.quemada) {
@@ -1519,7 +1518,6 @@ function sacarDeParrilla(
         imagenEmpanada.style.display =
             "none";
 
-
         botonSacar.disabled =
             true;
 
@@ -1559,7 +1557,7 @@ function sacarDeParrilla(
 
 
         mostrarMensaje(
-            "🔥 ¡Empanada quemada! La retiraste. Prepara una nueva."
+            "🔥 ¡Empanada quemada! Sácala y prepara otra."
         );
 
 
@@ -2366,10 +2364,14 @@ function crearDinero(
         35;
 
 
+    // ================================
+    // POSICIÓN DEL BILLETE
+    // ================================
+
     let posicionY =
         rectCliente.bottom -
         rectMesa.top -
-        85;
+        160;
 
 
     const anchoBillete =

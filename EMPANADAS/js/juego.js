@@ -1618,7 +1618,7 @@ function crearDinero(
     let posicionY =
         rectCliente.bottom -
         rectMesa.top -
-        85;
+        160;
 
 
     // ================================
@@ -1627,7 +1627,8 @@ function crearDinero(
 
     const anchoBillete = 70;
 
-    const altoBillete = 35;
+    // ALTURA DEL BILLETE CORREGIDA
+    const altoBillete = 50;
 
 
     const anchoMesa =
@@ -2534,14 +2535,11 @@ function mostrarPantallaFinal() {
 
     if (nivelSuperado) {
 
-        // Sistema nuevo de progreso
         localStorage.setItem(
             "nivelDesbloqueado",
             "2"
         );
 
-        // Mantener la clave anterior
-        // para no perder progreso existente
         localStorage.setItem(
             "nivel2Desbloqueado",
             "true"

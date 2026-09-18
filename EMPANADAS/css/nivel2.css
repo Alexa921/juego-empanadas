@@ -126,7 +126,7 @@ body {
 
     width: 100%;
 
-    height: calc(50vh - 80px);
+    height: calc(50vh - 10px);
 
     display: flex;
 
@@ -154,7 +154,7 @@ body {
 }
 
 .imagen-cliente {
-    height: 300px;
+    height: 450px;
 
     width: auto;
 
@@ -545,11 +545,18 @@ body {
     display: flex;
 
     justify-content: center;
+
     align-items: center;
 }
 
 .empanada {
-    width: 75px;
+    width: 105px;
+
+    max-width: 105px;
+
+    height: auto;
+
+    object-fit: contain;
 }
 
 
@@ -569,9 +576,13 @@ body {
 ========================= */
 
 .entrega img {
-    width: 85px;
+    width: 105px;
 
-    margin-bottom: 10px;
+    height: 105px;
+
+    object-fit: contain;
+
+    margin-bottom: 6px;
 }
 
 
@@ -888,4 +899,3 @@ body {
     }
 
 }
-
