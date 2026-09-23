@@ -10,6 +10,16 @@ let pedidosCorrectos = 0;
 
 let nivelTerminado = false;
 
+// Evita guardar la misma partida más de una vez
+let partidaGuardada = false;
+
+// Resultado real de la partida
+let partidaSuperada = false;
+
+// Indica que todos los clientes ya fueron procesados
+// pero todavía falta recoger dinero.
+let esperandoDinero = false;
+
 let rellenoSeleccionado = null;
 let empanadaCerrada = false;
 let empanadaCocinando = false;
@@ -23,6 +33,8 @@ let temporizadorQuemado;
 // ================================
 // CONFIGURACIÓN DEL NIVEL
 // ================================
+
+const nivelActual = 1;
 
 const totalClientes = 6;
 
@@ -60,7 +72,6 @@ const tiempoHTML =
 const mensajeHTML =
     document.getElementById("mensaje");
 
-
 const masa =
     document.getElementById("masa");
 
@@ -70,7 +81,6 @@ const empanada =
 const empanadaFinal =
     document.getElementById("empanada-final");
 
-
 const btnCarne =
     document.getElementById("btn-carne");
 
@@ -79,7 +89,6 @@ const btnPollo =
 
 const btnQueso =
     document.getElementById("btn-queso");
-
 
 const btnCerrar =
     document.getElementById("btn-cerrar");
@@ -93,13 +102,15 @@ const btnSacar =
 const btnEntregar =
     document.getElementById("btn-entregar");
 
+const btnTirar =
+    document.getElementById("btn-tirar");
 
 const clientesHTML =
     document.querySelectorAll(".cliente");
 
 
 // ================================
-// PEDIDOS DE LOS 6 CLIENTES
+// PEDIDOS DE LOS CLIENTES
 // ================================
 
 let pedidosClientes = [];
@@ -156,7 +167,7 @@ function generarPedido() {
 
 
 // ================================
-// GENERAR LOS 6 PEDIDOS
+// GENERAR PEDIDOS INICIALES
 // ================================
 
 function generarPedidosIniciales() {
@@ -554,6 +565,9 @@ btnSacar.disabled =
 btnEntregar.disabled =
     true;
 
+btnTirar.disabled =
+    true;
+
 
 actualizarPuntos();
 
@@ -670,6 +684,10 @@ function seleccionarRelleno(
         return;
     }
 
+    if (esperandoDinero) {
+        return;
+    }
+
     if (empanadaCerrada) {
 
         mostrarMensaje(
@@ -742,7 +760,7 @@ btnCerrar.addEventListener(
     "click",
     function () {
 
-        if (nivelTerminado) {
+        if (nivelTerminado || esperandoDinero) {
             return;
         }
 
@@ -797,6 +815,9 @@ btnCerrar.addEventListener(
         btnEntregar.disabled =
             true;
 
+        btnTirar.disabled =
+            true;
+
         mostrarMensaje(
             "¡Empanada cerrada! Ahora cocínala."
         );
@@ -812,7 +833,7 @@ btnCocinar.addEventListener(
     "click",
     function () {
 
-        if (nivelTerminado) {
+        if (nivelTerminado || esperandoDinero) {
             return;
         }
 
@@ -872,6 +893,9 @@ btnCocinar.addEventListener(
         btnEntregar.disabled =
             true;
 
+        btnTirar.disabled =
+            true;
+
 
         mostrarMensaje(
             "🍳 Cocinando empanada..."
@@ -889,7 +913,7 @@ btnCocinar.addEventListener(
         setTimeout(
             function () {
 
-                if (nivelTerminado) {
+                if (nivelTerminado || esperandoDinero) {
                     return;
                 }
 
@@ -924,6 +948,9 @@ btnCocinar.addEventListener(
                 btnEntregar.disabled =
                     true;
 
+                btnTirar.disabled =
+                    true;
+
 
                 mostrarMensaje(
                     "🟡 ¡La empanada está lista! Sácala antes de que se queme."
@@ -938,7 +965,10 @@ btnCocinar.addEventListener(
                     setTimeout(
                         function () {
 
-                            if (nivelTerminado) {
+                            if (
+                                nivelTerminado ||
+                                esperandoDinero
+                            ) {
                                 return;
                             }
 
@@ -974,6 +1004,9 @@ btnCocinar.addEventListener(
                             btnEntregar.disabled =
                                 true;
 
+                            btnTirar.disabled =
+                                true;
+
 
                             mostrarMensaje(
                                 "🔥 ¡Se quemó la empanada! Sácala y prepara otra."
@@ -998,7 +1031,7 @@ btnSacar.addEventListener(
     "click",
     function () {
 
-        if (nivelTerminado) {
+        if (nivelTerminado || esperandoDinero) {
             return;
         }
 
@@ -1059,6 +1092,9 @@ btnSacar.addEventListener(
             btnEntregar.disabled =
                 true;
 
+            btnTirar.disabled =
+                true;
+
 
             mostrarMensaje(
                 "🔥 Empanada quemada retirada. Prepara una nueva."
@@ -1111,6 +1147,9 @@ btnSacar.addEventListener(
             true;
 
         btnEntregar.disabled =
+            false;
+
+        btnTirar.disabled =
             false;
 
 
@@ -1223,7 +1262,7 @@ btnEntregar.addEventListener(
     "click",
     function () {
 
-        if (nivelTerminado) {
+        if (nivelTerminado || esperandoDinero) {
             return;
         }
 
@@ -1303,7 +1342,7 @@ btnEntregar.addEventListener(
 
 
         mostrarMensaje(
-            "🎉 ¡Pedido entregado! El cliente dejó $100."
+            "🎉 ¡Pedido entregado! El cliente dejó $100. Recoge el dinero."
         );
 
 
@@ -1322,22 +1361,78 @@ btnEntregar.addEventListener(
             posicionVisual,
             numeroCliente
         );
+    }
+);
 
 
-        const clientesProcesados =
-            pedidosCorrectos +
-            clientesSeFueron.filter(
-                estado => estado
-            ).length;
+// ================================
+// TIRAR EMPANADA
+// ================================
 
+btnTirar.addEventListener(
+    "click",
+    function () {
+
+        if (nivelTerminado || esperandoDinero) {
+            return;
+        }
 
         if (
-            clientesProcesados >=
-            totalClientes
+            !empanadaFinal ||
+            empanadaFinal.style.display === "none"
         ) {
 
-            comprobarFinDelNivel();
+            mostrarMensaje(
+                "No tienes una empanada para tirar."
+            );
+
+            return;
         }
+
+
+        empanadaFinal.style.display =
+            "none";
+
+
+        rellenoSeleccionado =
+            null;
+
+        empanadaCerrada =
+            false;
+
+        empanadaCocinando =
+            false;
+
+        empanadaLista =
+            false;
+
+        empanadaQuemada =
+            false;
+
+
+        masa.style.display =
+            "flex";
+
+
+        btnEntregar.disabled =
+            true;
+
+        btnTirar.disabled =
+            true;
+
+        btnCerrar.disabled =
+            true;
+
+        btnCocinar.disabled =
+            true;
+
+        btnSacar.disabled =
+            true;
+
+
+        mostrarMensaje(
+            "🗑️ Empanada tirada. Prepara una nueva."
+        );
     }
 );
 
@@ -1508,6 +1603,7 @@ function marcarClienteAtendido(
         "😄"
     );
 
+
     const chulo =
         document.createElement(
             "div"
@@ -1622,12 +1718,11 @@ function crearDinero(
 
 
     // ================================
-    // LIMITES DEL MOSTRADOR
+    // LÍMITES DEL MOSTRADOR
     // ================================
 
     const anchoBillete = 70;
 
-    // ALTURA DEL BILLETE CORREGIDA
     const altoBillete = 50;
 
 
@@ -1739,6 +1834,8 @@ function crearDinero(
             );
 
 
+            // Comprobar si este era
+            // el último dinero pendiente.
             actualizarFinPorDinero();
         }
     );
@@ -1775,18 +1872,31 @@ function hayDineroPendiente() {
 
 
 // ================================
+// CONTAR CLIENTES PROCESADOS
+// ================================
+
+function obtenerClientesProcesados() {
+
+    return (
+        pedidosCorrectos +
+        clientesSeFueron.filter(
+            estado => estado === true
+        ).length
+    );
+}
+
+
+// ================================
 // COMPROBAR FIN DEL NIVEL
 // ================================
 
 function comprobarFinDelNivel() {
 
     const clientesProcesados =
-        pedidosCorrectos +
-        clientesSeFueron.filter(
-            estado => estado
-        ).length;
+        obtenerClientesProcesados();
 
 
+    // Todavía faltan clientes
     if (
         clientesProcesados <
         totalClientes
@@ -1796,15 +1906,16 @@ function comprobarFinDelNivel() {
     }
 
 
-    // ================================
-    // TODAVÍA HAY DINERO
-    // ================================
+    // ========================================
+    // TODOS LOS CLIENTES FUERON PROCESADOS
+    // PERO TODAVÍA HAY DINERO PENDIENTE
+    // ========================================
 
     if (
         hayDineroPendiente()
     ) {
 
-        nivelTerminado =
+        esperandoDinero =
             true;
 
 
@@ -1812,11 +1923,9 @@ function comprobarFinDelNivel() {
             temporizador
         );
 
-
         clearInterval(
             temporizadorPaciencia
         );
-
 
         clearTimeout(
             temporizadorQuemado
@@ -1832,7 +1941,6 @@ function comprobarFinDelNivel() {
         btnQueso.disabled =
             true;
 
-
         btnCerrar.disabled =
             true;
 
@@ -1845,15 +1953,22 @@ function comprobarFinDelNivel() {
         btnEntregar.disabled =
             true;
 
+        btnTirar.disabled =
+            true;
+
 
         mostrarMensaje(
-            "💰 ¡Recoge todo el dinero que dejaron los clientes!"
+            "💰 ¡Recoge todo el dinero que dejaron los clientes para terminar el nivel!"
         );
-
 
         return;
     }
 
+
+    // ========================================
+    // TODOS LOS CLIENTES PROCESADOS
+    // Y TODO EL DINERO RECOGIDO
+    // ========================================
 
     terminarNivel();
 }
@@ -1865,28 +1980,42 @@ function comprobarFinDelNivel() {
 
 function actualizarFinPorDinero() {
 
+    const clientesProcesados =
+        obtenerClientesProcesados();
+
+
     if (
-        hayDineroPendiente()
+        clientesProcesados <
+        totalClientes
     ) {
 
         return;
     }
 
 
-    const clientesProcesados =
-        pedidosCorrectos +
-        clientesSeFueron.filter(
-            estado => estado
-        ).length;
-
-
     if (
-        clientesProcesados >=
-        totalClientes
+        hayDineroPendiente()
     ) {
 
-        terminarNivel();
+        esperandoDinero =
+            true;
+
+        mostrarMensaje(
+            "💰 ¡Recoge todo el dinero que dejaron los clientes!"
+        );
+
+        return;
     }
+
+
+    // ========================================
+    // YA NO QUEDA DINERO
+    // ========================================
+
+    esperandoDinero =
+        false;
+
+    terminarNivel();
 }
 
 
@@ -1954,6 +2083,9 @@ function reiniciarEmpanada() {
 
     btnEntregar.disabled =
         true;
+
+    btnTirar.disabled =
+        true;
 }
 
 
@@ -1964,14 +2096,14 @@ function reiniciarEmpanada() {
 function terminarNivel() {
 
     if (
-        document.querySelector(
-            ".pantalla-final"
-        )
+        nivelTerminado
     ) {
-
         return;
     }
 
+
+    esperandoDinero =
+        false;
 
     nivelTerminado =
         true;
@@ -2014,6 +2146,9 @@ function terminarNivel() {
     btnEntregar.disabled =
         true;
 
+    btnTirar.disabled =
+        true;
+
 
     mostrarMensaje(
         "🏆 ¡Nivel terminado!"
@@ -2037,7 +2172,10 @@ function terminarNivel() {
 
 function actualizarPaciencia() {
 
-    if (nivelTerminado) {
+    if (
+        nivelTerminado ||
+        esperandoDinero
+    ) {
         return;
     }
 
@@ -2173,7 +2311,10 @@ function clienteSeVa(
     posicionVisual
 ) {
 
-    if (nivelTerminado) {
+    if (
+        nivelTerminado ||
+        esperandoDinero
+    ) {
         return;
     }
 
@@ -2188,6 +2329,7 @@ function clienteSeVa(
         numeroCliente ===
         undefined
     ) {
+
         return;
     }
 
@@ -2197,6 +2339,7 @@ function clienteSeVa(
             numeroCliente
         ]
     ) {
+
         return;
     }
 
@@ -2294,7 +2437,10 @@ function clienteSeVa(
     setTimeout(
         function () {
 
-            if (nivelTerminado) {
+            if (
+                nivelTerminado ||
+                esperandoDinero
+            ) {
                 return;
             }
 
@@ -2372,7 +2518,10 @@ const temporizadorPaciencia =
     setInterval(
         function () {
 
-            if (!nivelTerminado) {
+            if (
+                !nivelTerminado &&
+                !esperandoDinero
+            ) {
 
                 actualizarPaciencia();
 
@@ -2391,7 +2540,10 @@ temporizador =
     setInterval(
         function () {
 
-            if (nivelTerminado) {
+            if (
+                nivelTerminado ||
+                esperandoDinero
+            ) {
                 return;
             }
 
@@ -2442,6 +2594,18 @@ temporizador =
                 btnEntregar.disabled =
                     true;
 
+                btnTirar.disabled =
+                    true;
+
+
+                nivelTerminado =
+                    true;
+
+
+                clearInterval(
+                    temporizadorPaciencia
+                );
+
 
                 mostrarPantallaFinal();
             }
@@ -2486,10 +2650,207 @@ function calcularEstrellas() {
 
 
 // ================================
+// GUARDAR PARTIDA EN EL BACKEND
+// ================================
+
+async function guardarPartida() {
+
+    // Evitar guardar dos veces
+    if (partidaGuardada) {
+        return;
+    }
+
+
+    const token =
+        localStorage.getItem("token");
+
+
+    // ================================
+    // COMPROBAR SESIÓN
+    // ================================
+
+    if (!token) {
+
+        console.error(
+            "No hay sesión iniciada. La partida no se puede guardar."
+        );
+
+        return;
+    }
+
+
+    // Marcar inmediatamente para evitar
+    // dobles llamadas al backend
+    partidaGuardada = true;
+
+
+    const estrellas =
+        calcularEstrellas();
+
+
+    try {
+
+        const respuesta =
+            await fetch(
+                "http://localhost:3000/api/partidas",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            `Bearer ${token}`
+                    },
+
+                    body: JSON.stringify({
+
+                        nivel:
+                            nivelActual,
+
+                        clientesAtendidos:
+                            pedidosCorrectos,
+
+                        estrellas:
+                            estrellas,
+
+                        puntuacion:
+                            puntos
+                    })
+                }
+            );
+
+
+        const datos =
+            await respuesta.json();
+
+
+        console.log(
+            "📦 Respuesta del servidor al guardar partida:",
+            datos
+        );
+
+
+        if (!respuesta.ok) {
+
+            console.error(
+                "❌ No se pudo guardar la partida:",
+                datos.mensaje
+            );
+
+            partidaGuardada = false;
+
+            return;
+        }
+
+
+        console.log(
+            "✅ Partida guardada correctamente"
+        );
+
+
+        // ========================================
+        // RESULTADO REAL DEL BACKEND
+        // ========================================
+
+        if (
+            datos.partida &&
+            typeof datos.partida.superado === "boolean"
+        ) {
+
+            partidaSuperada =
+                datos.partida.superado;
+
+        }
+
+        else if (
+            typeof datos.superado === "boolean"
+        ) {
+
+            partidaSuperada =
+                datos.superado;
+
+        }
+
+        else {
+
+            // Si el servidor confirmó que la partida
+            // se guardó pero una versión antigua
+            // de la respuesta no incluye "superado",
+            // usamos la meta oficial del nivel.
+
+            partidaSuperada =
+                pedidosCorrectos >=
+                metaPedidos;
+        }
+
+
+        console.log(
+            "🎯 Resultado final:",
+            partidaSuperada
+        );
+
+
+        // ================================
+        // ACTUALIZAR USUARIO LOCAL
+        // ================================
+
+        if (datos.usuario) {
+
+            const usuarioActual =
+                JSON.parse(
+                    localStorage.getItem(
+                        "usuario"
+                    )
+                ) || {};
+
+
+            const usuarioActualizado = {
+
+                ...usuarioActual,
+
+                username:
+                    datos.usuario.username,
+
+                nivelDesbloqueado:
+                    datos.usuario.nivelDesbloqueado
+            };
+
+
+            localStorage.setItem(
+                "usuario",
+                JSON.stringify(
+                    usuarioActualizado
+                )
+            );
+        }
+
+    } catch (error) {
+
+        console.error(
+            "❌ Error al guardar la partida:",
+            error
+        );
+
+        partidaGuardada = false;
+
+        // Como el juego ya terminó y la meta
+        // del Nivel 1 está definida en 4 pedidos,
+        // mantenemos el resultado correcto de
+        // la partida para mostrar la pantalla final.
+        partidaSuperada =
+            pedidosCorrectos >=
+            metaPedidos;
+    }
+}
+
+
+// ================================
 // PANTALLA FINAL
 // ================================
 
-function mostrarPantallaFinal() {
+async function mostrarPantallaFinal() {
 
     if (
         document.querySelector(
@@ -2503,6 +2864,9 @@ function mostrarPantallaFinal() {
 
     nivelTerminado =
         true;
+
+    esperandoDinero =
+        false;
 
 
     clearInterval(
@@ -2524,28 +2888,30 @@ function mostrarPantallaFinal() {
         calcularEstrellas();
 
 
+    // ========================================
+    // GUARDAR PARTIDA
+    // ========================================
+
+    await guardarPartida();
+
+
+    // ========================================
+    // RESULTADO FINAL
+    // ========================================
+
     const nivelSuperado =
-        pedidosCorrectos >=
-        metaPedidos;
+        partidaSuperada === true;
+
+
+    console.log(
+        "🏆 ¿Nivel superado?:",
+        nivelSuperado
+    );
 
 
     // ================================
-    // DESBLOQUEAR NIVEL 2
+    // CREAR PANTALLA FINAL
     // ================================
-
-    if (nivelSuperado) {
-
-        localStorage.setItem(
-            "nivelDesbloqueado",
-            "2"
-        );
-
-        localStorage.setItem(
-            "nivel2Desbloqueado",
-            "true"
-        );
-    }
-
 
     const pantalla =
         document.createElement(
@@ -2594,7 +2960,7 @@ function mostrarPantallaFinal() {
 
                 🥟 Pedidos correctos:
 
-                ${pedidosCorrectos}/6
+                ${pedidosCorrectos}/${totalClientes}
 
             </div>
 
@@ -2624,7 +2990,7 @@ function mostrarPantallaFinal() {
 
                     ${
                         nivelSuperado
-                            ? "SIGUIENTE NIVEL"
+                            ? "➡️ SIGUIENTE NIVEL"
                             : "🔄 REINTENTAR"
                     }
 

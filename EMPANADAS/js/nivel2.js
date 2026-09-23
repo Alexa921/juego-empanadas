@@ -3,12 +3,21 @@
 // ================================
 
 let puntos = 0;
-let tiempo = 70;
+let tiempo = 50;
 
 let dinero = 0;
 let pedidosCorrectos = 0;
 
 let nivelTerminado = false;
+
+
+// ================================
+// ESTADO DEL GUARDADO
+// ================================
+
+let partidaGuardada = false;
+let guardandoPartida = false;
+let partidaSuperada = false;
 
 
 // ================================
@@ -69,7 +78,8 @@ const totalClientes = 8;
 
 const clientesVisibles = 3;
 
-const metaPedidos = 5;
+// 6 de 8 pedidos correctos para superar el nivel
+const metaPedidos = 6;
 
 
 // ================================
@@ -181,6 +191,9 @@ const btnSacar2 =
 
 const btnEntregar =
     document.getElementById("btn-entregar");
+
+const btnTirar =
+    document.getElementById("btn-tirar");
 
 
 // ================================
@@ -670,6 +683,9 @@ btnSacar2.disabled =
 btnEntregar.disabled =
     true;
 
+btnTirar.disabled =
+    true;
+
 
 actualizarPuntos();
 
@@ -904,10 +920,6 @@ btnCerrar.addEventListener(
         }
 
 
-        // ================================
-        // BUSCAR PARRILLA LIBRE
-        // ================================
-
         const parrillaLibre =
             obtenerParrillaLibre();
 
@@ -922,10 +934,6 @@ btnCerrar.addEventListener(
         }
 
 
-        // ================================
-        // QUITAR RELLENO VISUAL
-        // ================================
-
         const proteina =
             document.querySelector(
                 ".proteina-sobre-masa"
@@ -935,10 +943,6 @@ btnCerrar.addEventListener(
             proteina.remove();
         }
 
-
-        // ================================
-        // CERRAR EMPANADA
-        // ================================
 
         empanadaCerrada =
             true;
@@ -951,10 +955,6 @@ btnCerrar.addEventListener(
         btnCerrar.disabled =
             true;
 
-
-        // ================================
-        // COLOCAR EN PARRILLA LIBRE
-        // ================================
 
         colocarEmpanadaEnParrilla(
             parrillaLibre
@@ -1001,10 +1001,6 @@ function colocarEmpanadaEnParrilla(
     }
 
 
-    // ================================
-    // COMPROBAR
-    // ================================
-
     if (parrilla.ocupada) {
 
         mostrarMensaje(
@@ -1014,10 +1010,6 @@ function colocarEmpanadaEnParrilla(
         return;
     }
 
-
-    // ================================
-    // GUARDAR EMPANADA
-    // ================================
 
     parrilla.ocupada =
         true;
@@ -1035,10 +1027,6 @@ function colocarEmpanadaEnParrilla(
         rellenoSeleccionado;
 
 
-    // ================================
-    // MOSTRAR EMPANADA CERRADA
-    // ================================
-
     imagenEmpanada.src =
         "img/empanada/empanada-cerrada.png";
 
@@ -1046,20 +1034,12 @@ function colocarEmpanadaEnParrilla(
         "block";
 
 
-    // ================================
-    // REINICIAR PREPARACIÓN
-    // ================================
-
     empanadaCerrada =
         false;
 
     rellenoSeleccionado =
         null;
 
-
-    // ================================
-    // ACTUALIZAR BOTONES
-    // ================================
 
     actualizarParrillas();
 }
@@ -1143,10 +1123,6 @@ function cocinarEnParrilla(
     }
 
 
-    // ================================
-    // COMPROBAR SI ESTÁ OCUPADA
-    // ================================
-
     if (!parrilla.ocupada) {
 
         mostrarMensaje(
@@ -1187,10 +1163,6 @@ function cocinarEnParrilla(
     }
 
 
-    // ================================
-    // COMENZAR COCCIÓN
-    // ================================
-
     parrilla.cocinando =
         true;
 
@@ -1218,10 +1190,6 @@ function cocinarEnParrilla(
     actualizarParrillas();
 
 
-    // ================================
-    // LIMPIAR TEMPORIZADORES ANTERIORES
-    // ================================
-
     if (numeroParrilla === 1) {
 
         clearTimeout(
@@ -1244,10 +1212,6 @@ function cocinarEnParrilla(
     }
 
 
-    // ================================
-    // TEMPORIZADOR PARA DEJARLA DORADA
-    // ================================
-
     const temporizadorDorado =
         setTimeout(
             function () {
@@ -1266,10 +1230,6 @@ function cocinarEnParrilla(
                     return;
                 }
 
-
-                // ================================
-                // PASAR A DORADA
-                // ================================
 
                 parrilla.cocinando =
                     false;
@@ -1305,10 +1265,6 @@ function cocinarEnParrilla(
                 actualizarParrillas();
 
 
-                // ================================
-                // TEMPORIZADOR PARA QUEMARSE
-                // ================================
-
                 const temporizadorQuemado =
                     setTimeout(
                         function () {
@@ -1327,10 +1283,6 @@ function cocinarEnParrilla(
                                 return;
                             }
 
-
-                            // ================================
-                            // EMPANADA QUEMADA
-                            // ================================
 
                             parrilla.lista =
                                 false;
@@ -1473,10 +1425,6 @@ function sacarDeParrilla(
 
     if (parrilla.quemada) {
 
-        // ================================
-        // CANCELAR TEMPORIZADORES
-        // ================================
-
         if (numeroParrilla === 1) {
 
             clearTimeout(
@@ -1511,20 +1459,12 @@ function sacarDeParrilla(
         }
 
 
-        // ================================
-        // OCULTAR EMPANADA QUEMADA
-        // ================================
-
         imagenEmpanada.style.display =
             "none";
 
         botonSacar.disabled =
             true;
 
-
-        // ================================
-        // LIBERAR PARRILLA
-        // ================================
 
         parrilla.ocupada =
             false;
@@ -1544,10 +1484,6 @@ function sacarDeParrilla(
 
         actualizarParrillas();
 
-
-        // ================================
-        // VOLVER A PREPARACIÓN
-        // ================================
 
         masa.style.display =
             "flex";
@@ -1627,20 +1563,12 @@ function sacarDeParrilla(
     });
 
 
-    // ================================
-    // OCULTAR EMPANADA DE PARRILLA
-    // ================================
-
     imagenEmpanada.style.display =
         "none";
 
     botonSacar.disabled =
         true;
 
-
-    // ================================
-    // LIBERAR PARRILLA
-    // ================================
 
     parrilla.ocupada =
         false;
@@ -1658,16 +1586,7 @@ function sacarDeParrilla(
         null;
 
 
-    // ================================
-    // ACTUALIZAR ENTREGA
-    // ================================
-
     actualizarEntrega();
-
-
-    // ================================
-    // ACTUALIZAR PARRILLAS
-    // ================================
 
     actualizarParrillas();
 
@@ -1696,6 +1615,9 @@ function actualizarEntrega() {
         btnEntregar.disabled =
             true;
 
+        btnTirar.disabled =
+            true;
+
         return;
     }
 
@@ -1709,7 +1631,56 @@ function actualizarEntrega() {
 
     btnEntregar.disabled =
         false;
+
+    btnTirar.disabled =
+        false;
 }
+
+
+// ================================
+// TIRAR EMPANADA
+// ================================
+
+btnTirar.addEventListener(
+    "click",
+    function () {
+
+        if (nivelTerminado) {
+            return;
+        }
+
+
+        if (
+            empanadasParaEntregar.length === 0
+        ) {
+
+            mostrarMensaje(
+                "No tienes una empanada para tirar."
+            );
+
+            btnTirar.disabled =
+                true;
+
+            return;
+        }
+
+
+        // Eliminar la primera empanada
+        // de la cola de entrega
+        const empanadaTirada =
+            empanadasParaEntregar.shift();
+
+
+        actualizarEntrega();
+
+
+        mostrarMensaje(
+            "🗑️ Tiraste la empanada de " +
+            empanadaTirada.relleno +
+            ". Prepara otra."
+        );
+    }
+);
 
 
 // ================================
@@ -1722,10 +1693,6 @@ function actualizarParrillas() {
         return;
     }
 
-
-    // ================================
-    // PARRILLA 1
-    // ================================
 
     if (
         parrilla1.ocupada &&
@@ -1744,10 +1711,6 @@ function actualizarParrillas() {
     }
 
 
-    // ================================
-    // PARRILLA 2
-    // ================================
-
     if (
         parrilla2.ocupada &&
         !parrilla2.cocinando &&
@@ -1764,10 +1727,6 @@ function actualizarParrillas() {
             true;
     }
 
-
-    // ================================
-    // BOTONES SACAR
-    // ================================
 
     btnSacar1.disabled =
         !parrilla1.lista &&
@@ -1914,10 +1873,6 @@ btnEntregar.addEventListener(
         }
 
 
-        // ================================
-        // TOMAR PRIMERA EMPANADA
-        // ================================
-
         const empanada =
             empanadasParaEntregar[0];
 
@@ -1925,10 +1880,6 @@ btnEntregar.addEventListener(
         const relleno =
             empanada.relleno;
 
-
-        // ================================
-        // BUSCAR CLIENTE
-        // ================================
 
         const clienteEncontrado =
             buscarClientePorPedido(
@@ -1941,7 +1892,7 @@ btnEntregar.addEventListener(
             mostrarMensaje(
                 "🤔 Ningún cliente está esperando una empanada de " +
                 relleno +
-                "."
+                ". Puedes tirarla con el botón TIRAR."
             );
 
             return;
@@ -1955,10 +1906,6 @@ btnEntregar.addEventListener(
             clienteEncontrado.posicionVisual;
 
 
-        // ================================
-        // PEDIDO CORRECTO
-        // ================================
-
         puntos += 100;
 
         pedidosCorrectos++;
@@ -1967,19 +1914,11 @@ btnEntregar.addEventListener(
         actualizarPuntos();
 
 
-        // ================================
-        // CREAR DINERO
-        // ================================
-
         crearDinero(
             posicionVisual,
             numeroCliente
         );
 
-
-        // ================================
-        // MARCAR CLIENTE
-        // ================================
 
         marcarClienteAtendido(
             posicionVisual
@@ -1991,33 +1930,17 @@ btnEntregar.addEventListener(
         );
 
 
-        // ================================
-        // SACAR DE LA COLA
-        // ================================
-
         empanadasParaEntregar.shift();
 
 
-        // ================================
-        // MOSTRAR SIGUIENTE
-        // ================================
-
         actualizarEntrega();
 
-
-        // ================================
-        // REEMPLAZAR CLIENTE
-        // ================================
 
         reemplazarClienteAtendido(
             posicionVisual,
             numeroCliente
         );
 
-
-        // ================================
-        // COMPROBAR FIN
-        // ================================
 
         const clientesProcesados =
             pedidosCorrectos +
@@ -2364,10 +2287,6 @@ function crearDinero(
         35;
 
 
-    // ================================
-    // POSICIÓN DEL BILLETE
-    // ================================
-
     let posicionY =
         rectCliente.bottom -
         rectMesa.top -
@@ -2547,9 +2466,9 @@ function comprobarFinDelNivel() {
         hayDineroPendiente()
     ) {
 
-        nivelTerminado =
-            true;
-
+        // IMPORTANTE:
+        // No ponemos nivelTerminado = true.
+        // Los billetes deben seguir siendo clickeables.
 
         clearInterval(
             temporizador
@@ -2679,6 +2598,9 @@ function desactivarControles() {
         true;
 
     btnEntregar.disabled =
+        true;
+
+    btnTirar.disabled =
         true;
 }
 
@@ -3162,7 +3084,7 @@ function calcularEstrellas() {
 
 
     if (
-        pedidosCorrectos >= 5
+        pedidosCorrectos >= 6
     ) {
 
         return 1;
@@ -3174,10 +3096,188 @@ function calcularEstrellas() {
 
 
 // ================================
+// GUARDAR PARTIDA
+// ================================
+
+async function guardarPartida() {
+
+    // Si ya se guardó, no volver a enviarla
+    if (partidaGuardada) {
+        return partidaSuperada;
+    }
+
+
+    // Si ya hay una petición en curso
+    if (guardandoPartida) {
+        return partidaSuperada;
+    }
+
+
+    guardandoPartida =
+        true;
+
+
+    const token =
+        localStorage.getItem(
+            "token"
+        );
+
+
+    if (!token) {
+
+        console.error(
+            "❌ No se encontró el token de autenticación."
+        );
+
+        guardandoPartida =
+            false;
+
+        return null;
+    }
+
+
+    try {
+
+        const respuesta =
+            await fetch(
+                "http://localhost:3000/api/partidas",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            `Bearer ${token}`
+                    },
+
+                    body:
+                        JSON.stringify({
+                            nivel: 2,
+
+                            clientesAtendidos:
+                                pedidosCorrectos,
+
+                            estrellas:
+                                calcularEstrellas(),
+
+                            puntuacion:
+                                puntos
+                        })
+                }
+            );
+
+
+        const datos =
+            await respuesta.json();
+
+
+        console.log(
+            "📦 Respuesta del servidor al guardar Nivel 2:",
+            datos
+        );
+
+
+        if (!respuesta.ok) {
+
+            throw new Error(
+                datos.mensaje ||
+                "Error al guardar la partida."
+            );
+        }
+
+
+        partidaSuperada =
+            datos.partida &&
+            datos.partida.superado === true;
+
+
+        partidaGuardada =
+            true;
+
+
+        // ================================
+        // ACTUALIZAR USUARIO LOCAL
+        // ================================
+
+        if (
+            datos.usuario &&
+            datos.usuario.nivelDesbloqueado
+        ) {
+
+            const usuarioGuardado =
+                JSON.parse(
+                    localStorage.getItem(
+                        "usuario"
+                    )
+                );
+
+
+            if (usuarioGuardado) {
+
+                usuarioGuardado.nivelDesbloqueado =
+                    datos.usuario.nivelDesbloqueado;
+
+
+                localStorage.setItem(
+                    "usuario",
+                    JSON.stringify(
+                        usuarioGuardado
+                    )
+                );
+            }
+
+
+            // También mantenemos este valor
+            // por compatibilidad con niveles.html
+            localStorage.setItem(
+                "nivelDesbloqueado",
+                String(
+                    datos.usuario.nivelDesbloqueado
+                )
+            );
+        }
+
+
+        console.log(
+            "✅ Nivel 2 guardado correctamente."
+        );
+
+        console.log(
+            "🎯 Nivel 2 superado:",
+            partidaSuperada
+        );
+
+
+        guardandoPartida =
+            false;
+
+
+        return partidaSuperada;
+
+    } catch (error) {
+
+        console.error(
+            "❌ Error al guardar Nivel 2:",
+            error
+        );
+
+
+        guardandoPartida =
+            false;
+
+
+        return null;
+    }
+}
+
+
+// ================================
 // PANTALLA FINAL
 // ================================
 
-function mostrarPantallaFinal() {
+async function mostrarPantallaFinal() {
 
     if (
         document.querySelector(
@@ -3209,42 +3309,139 @@ function mostrarPantallaFinal() {
     desactivarControles();
 
 
+    // ================================
+    // GUARDAR PARTIDA EN BACKEND
+    // ================================
+
+    mostrarMensaje(
+        "💾 Guardando partida..."
+    );
+
+
+    const resultadoGuardado =
+        await guardarPartida();
+
+
+    // ================================
+    // SI FALLÓ EL GUARDADO
+    // ================================
+
+    if (
+        resultadoGuardado === null
+    ) {
+
+        mostrarMensaje(
+            "⚠️ No se pudo guardar la partida."
+        );
+
+
+        const pantallaError =
+            document.createElement(
+                "div"
+            );
+
+
+        pantallaError.classList.add(
+            "pantalla-final"
+        );
+
+
+        pantallaError.innerHTML = `
+
+            <div class="panel-final">
+
+                <h1>⚠️ ERROR AL GUARDAR</h1>
+
+                <div class="resultado-final">
+                    No pudimos guardar tu resultado.
+                </div>
+
+                <div class="estadistica-final">
+                    🥟 Pedidos correctos:
+                    ${pedidosCorrectos}/8
+                </div>
+
+                <div class="estadistica-final">
+                    ⭐ Puntos:
+                    ${puntos}
+                </div>
+
+                <div class="botones-final">
+
+                    <button
+                        class="boton-final"
+                        id="btn-reintentar-guardado">
+                        🔄 INTENTAR DE NUEVO
+                    </button>
+
+                    <button
+                        class="boton-final"
+                        id="btn-volver-niveles-error">
+                        VOLVER AL MENÚ
+                    </button>
+
+                </div>
+
+            </div>
+
+        `;
+
+
+        document.body.appendChild(
+            pantallaError
+        );
+
+
+        document
+            .getElementById(
+                "btn-reintentar-guardado"
+            )
+            .addEventListener(
+                "click",
+                function () {
+
+                    pantallaError.remove();
+
+                    mostrarPantallaFinal();
+
+                }
+            );
+
+
+        document
+            .getElementById(
+                "btn-volver-niveles-error"
+            )
+            .addEventListener(
+                "click",
+                function () {
+
+                    window.location.href =
+                        "niveles.html";
+
+                }
+            );
+
+
+        return;
+    }
+
+
+    // ================================
+    // DATOS FINALES
+    // ================================
+
     const estrellas =
         calcularEstrellas();
 
 
     const nivelSuperado =
-        pedidosCorrectos >=
-        metaPedidos;
+        partidaSuperada;
 
 
     // ================================
-    // DESBLOQUEAR NIVEL 3
+    // CREAR PANTALLA
     // ================================
-
-    if (nivelSuperado) {
-
-        const nivelDesbloqueadoActual =
-            parseInt(
-                localStorage.getItem(
-                    "nivelDesbloqueado"
-                ),
-                10
-            ) || 1;
-
-
-        if (
-            nivelDesbloqueadoActual <
-            3
-        ) {
-
-            localStorage.setItem(
-                "nivelDesbloqueado",
-                "3"
-            );
-        }
-    }
-
 
     const pantalla =
         document.createElement(
@@ -3315,10 +3512,6 @@ function mostrarPantallaFinal() {
 
     `;
 
-
-    // ================================
-    // AGREGAR PANTALLA
-    // ================================
 
     document.body.appendChild(
         pantalla

@@ -1,0 +1,216 @@
+/* ==============================
+   CONFIGURACIÓN GENERAL
+============================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #fff8ed;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 20px;
+}
+
+
+/* ==============================
+   PANTALLA
+============================== */
+
+.pantalla-login {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/* ==============================
+   TARJETA
+============================== */
+
+.tarjeta-login {
+    width: 100%;
+    max-width: 420px;
+
+    background-color: white;
+
+    padding: 40px 35px;
+
+    border-radius: 20px;
+
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+
+    text-align: center;
+}
+
+
+/* ==============================
+   TÍTULO
+============================== */
+
+.tarjeta-login h1 {
+    margin-bottom: 10px;
+
+    font-size: 32px;
+    color: #333;
+}
+
+
+/* ==============================
+   TEXTO
+============================== */
+
+.texto-instruccion {
+    margin-bottom: 30px;
+
+    color: #777;
+    font-size: 16px;
+}
+
+
+/* ==============================
+   INPUTS
+============================== */
+
+.grupo-input {
+    display: flex;
+    flex-direction: column;
+
+    text-align: left;
+
+    margin-bottom: 20px;
+}
+
+.grupo-input label {
+    margin-bottom: 7px;
+
+    font-size: 15px;
+    font-weight: bold;
+
+    color: #444;
+}
+
+.grupo-input input {
+    width: 100%;
+
+    padding: 13px 15px;
+
+    border: 2px solid #ddd;
+    border-radius: 15px;
+
+    font-size: 16px;
+
+    outline: none;
+
+    transition: border-color 0.2s;
+}
+
+.grupo-input input:focus {
+    border-color: #f5a623;
+}
+
+
+/* ==============================
+   MENSAJE
+============================== */
+
+.mensaje {
+    min-height: 22px;
+
+    margin-bottom: 10px;
+
+    font-size: 14px;
+}
+
+
+/* ==============================
+   BOTONES
+============================== */
+
+.boton-principal,
+.boton-secundario {
+    width: 100%;
+
+    padding: 13px 20px;
+
+    border: none;
+    border-radius: 15px;
+
+    font-size: 17px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.15s,
+        opacity 0.15s;
+}
+
+
+/* Botón naranja */
+
+.boton-principal {
+    background-color: #f5a623;
+    color: white;
+}
+
+.boton-principal:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+
+/* Botón crear cuenta */
+
+.boton-secundario {
+    background-color: #f5a623;
+    color: white;
+}
+
+.boton-secundario:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+.boton-principal:active,
+.boton-secundario:active {
+    transform: translateY(0);
+}
+
+
+/* ==============================
+   SEPARADOR
+============================== */
+
+.separador {
+    margin: 25px 0 15px;
+
+    color: #888;
+
+    font-size: 14px;
+}
+
+
+/* ==============================
+   RESPONSIVE
+============================== */
+
+@media (max-width: 480px) {
+
+    .tarjeta-login {
+        padding: 30px 22px;
+    }
+
+    .tarjeta-login h1 {
+        font-size: 27px;
+    }
+}

@@ -8,23 +8,93 @@ const botonVolver = document.getElementById("btn-volver");
 
 
 // ========================================
-// PROGRESO DE NIVELES
+// PROGRESO DEL JUGADOR
 // ========================================
 
-// Si no existe ningún progreso guardado,
-// el Nivel 1 comienza desbloqueado.
-let nivelDesbloqueado = parseInt(
-    localStorage.getItem("nivelDesbloqueado")
-);
+let nivelDesbloqueado = 1;
 
-if (!nivelDesbloqueado || nivelDesbloqueado < 1) {
-    nivelDesbloqueado = 1;
-    localStorage.setItem("nivelDesbloqueado", "1");
+
+// ========================================
+// VERIFICAR SESIÓN Y CARGAR PROGRESO
+// ========================================
+
+async function cargarProgreso() {
+
+    const token = localStorage.getItem("token");
+
+    // Si no hay sesión iniciada
+    if (!token) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    try {
+
+        const respuesta = await fetch(
+            "http://localhost:3000/api/auth/me",
+            {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
+        );
+
+        const datos = await respuesta.json();
+
+        // ========================================
+        // TOKEN INVÁLIDO O EXPIRADO
+        // ========================================
+
+        if (!respuesta.ok) {
+
+            localStorage.removeItem("token");
+            localStorage.removeItem("usuario");
+
+            window.location.href = "login.html";
+            return;
+        }
+
+
+        // ========================================
+        // OBTENER PROGRESO DESDE MONGODB
+        // ========================================
+
+        nivelDesbloqueado = datos.usuario.nivelDesbloqueado;
+
+
+        // ========================================
+        // ACTUALIZAR INFORMACIÓN LOCAL
+        // ========================================
+
+        localStorage.setItem(
+            "usuario",
+            JSON.stringify(datos.usuario)
+        );
+
+
+        // ========================================
+        // ACTUALIZAR BOTONES
+        // ========================================
+
+        actualizarNiveles();
+
+    } catch (error) {
+
+        console.error(
+            "Error al cargar el progreso:",
+            error
+        );
+
+        alert(
+            "No se pudo conectar con el servidor."
+        );
+    }
 }
 
 
 // ========================================
-// FUNCIÓN PARA ACTUALIZAR LOS NIVELES
+// ACTUALIZAR LOS NIVELES
 // ========================================
 
 function actualizarNiveles() {
@@ -39,30 +109,42 @@ function actualizarNiveles() {
 
     niveles.forEach(function (nivel, indice) {
 
+        // Si por alguna razón el botón no existe,
+        // simplemente no hacemos nada.
+        if (!nivel) {
+            return;
+        }
+
         const numeroNivel = indice + 1;
+
+
+        // ========================================
+        // NIVEL DESBLOQUEADO
+        // ========================================
 
         if (numeroNivel <= nivelDesbloqueado) {
 
-            // NIVEL DESBLOQUEADO
             nivel.classList.remove("bloqueado");
             nivel.classList.add("desbloqueado");
 
-            // Mostrar el número
             nivel.textContent = numeroNivel;
 
-            // Permitir hacer clic
             nivel.disabled = false;
 
-        } else {
+        }
 
-            // NIVEL BLOQUEADO
+
+        // ========================================
+        // NIVEL BLOQUEADO
+        // ========================================
+
+        else {
+
             nivel.classList.remove("desbloqueado");
             nivel.classList.add("bloqueado");
 
-            // Mostrar candado
             nivel.textContent = "🔒";
 
-            // Bloquear botón
             nivel.disabled = true;
         }
     });
@@ -139,12 +221,14 @@ nivel5.addEventListener("click", function () {
 // ========================================
 
 botonVolver.addEventListener("click", function () {
+
     window.location.href = "index.html";
+
 });
 
 
 // ========================================
-// ACTUALIZAR VISUALMENTE
+// INICIAR
 // ========================================
 
-actualizarNiveles();
+cargarProgreso();

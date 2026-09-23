@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Iniciar sesión - Juego de Empanadas</title>
+
+    <link rel="stylesheet" href="CSS/login.css">
+</head>
+
+<body>
+
+    <main class="pantalla-login">
+
+        <section class="tarjeta-login">
+
+            <h1>Iniciar sesión</h1>
+
+            <p class="texto-instruccion">
+                Ingresa tus datos para continuar jugando
+            </p>
+
+            <form id="form-login">
+
+                <div class="grupo-input">
+                    <label for="username">Usuario</label>
+
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        placeholder="Escribe tu usuario"
+                        autocomplete="username"
+                        required
+                    >
+                </div>
+
+                <div class="grupo-input">
+                    <label for="password">Contraseña</label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Escribe tu contraseña"
+                        autocomplete="current-password"
+                        required
+                    >
+                </div>
+
+                <p id="mensaje-login" class="mensaje"></p>
+
+                <button type="submit" class="boton-principal">
+                    Iniciar sesión
+                </button>
+
+            </form>
+
+            <div class="separador">
+                <span>¿No tienes una cuenta?</span>
+            </div>
+
+            <button
+                type="button"
+                id="boton-registro"
+                class="boton-secundario"
+            >
+                Crear cuenta
+            </button>
+
+        </section>
+
+    </main>
+
+    <script src="JS/login.js"></script>
+
+</body>
+
+</html>
