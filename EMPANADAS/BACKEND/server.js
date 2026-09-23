@@ -12,7 +12,29 @@ const app = express();
 // MIDDLEWARES
 // ==============================
 
-app.use(cors());
+// Configuración explicita de CORS para permitir peticiones desde Netlify y desarrollo local
+const allowedOrigins = [
+  "https://juego-empanadas.netlify.app", 
+  "http://localhost:5173",          // Para desarrollo local con Vite
+  "http://localhost:3000"           // Para desarrollo local con Node/React
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Permite solicitudes sin 'origin' (como Postman o peticiones del mismo servidor)
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Bloqueado por política de CORS"));
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true
+  })
+);
+
 app.use(express.json());
 
 
