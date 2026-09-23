@@ -31,7 +31,7 @@ async function cargarProgreso() {
     try {
 
         const respuesta = await fetch(
-            "http://localhost:3000/api/auth/me",
+            "https://juego-empanadas-backend.onrender.com/api/auth/me",
             {
                 method: "GET",
                 headers: {
