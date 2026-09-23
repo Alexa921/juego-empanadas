@@ -23,6 +23,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/partidas", partidasRoutes);
 
+
 // ==============================
 // RUTA DE PRUEBA
 // ==============================
@@ -43,9 +44,11 @@ mongoose
     .then(() => {
         console.log("✅ MongoDB conectado correctamente");
 
-        app.listen(process.env.PORT, () => {
+        const PORT = process.env.PORT || 3000;
+
+        app.listen(PORT, () => {
             console.log(
-                `🚀 Servidor funcionando en http://localhost:${process.env.PORT}`
+                `🚀 Servidor funcionando en el puerto ${PORT}`
             );
         });
     })
