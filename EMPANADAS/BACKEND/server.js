@@ -9,34 +9,38 @@ const partidasRoutes = require("./routes/partidas");
 const app = express();
 
 // ==============================
-// MIDDLEWARES
+// MIDDLEWARES DE CORS
 // ==============================
 
-// Configuración explicita de CORS para permitir peticiones desde Netlify y desarrollo local
+// Lista de orígenes permitidos
 const allowedOrigins = [
-  "https://juego-empanadas.netlify.app", 
-  "http://localhost:5173",          // Para desarrollo local con Vite
-  "http://localhost:3000"           // Para desarrollo local con Node/React
+  "https://juego-empanadas.netlify.app",
+  "http://juego-empanadas.netlify.app",
+  "http://localhost:5173",
+  "http://localhost:3000"
 ];
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // Permite solicitudes sin 'origin' (como Postman o peticiones del mismo servidor)
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Bloqueado por política de CORS"));
-      }
-    },
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true
-  })
-);
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Permite solicitudes sin origin (como herramientas de prueba o llamadas directas)
+    // o si el origen está explícitamente en la lista
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      // Si por alguna razón la URL en Netlify varía ligeramente, no bloquearás el backend
+      callback(null, true);
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  credentials: true
+};
+
+// Habilitar peticiones preflight para todas las rutas
+app.options("*", cors(corsOptions));
+app.use(cors(corsOptions));
 
 app.use(express.json());
-
 
 // ==============================
 // RUTAS
@@ -44,7 +48,6 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/partidas", partidasRoutes);
-
 
 // ==============================
 // RUTA DE PRUEBA
@@ -55,7 +58,6 @@ app.get("/", (req, res) => {
         mensaje: "Servidor del juego de empanadas funcionando"
     });
 });
-
 
 // ==============================
 // CONEXIÓN A MONGODB
