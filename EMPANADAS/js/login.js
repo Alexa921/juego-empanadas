@@ -1,16 +1,18 @@
 // ==============================
-// LOGIN
+// CONFIGURACIÓN DE LA API
 // ==============================
+const API_URL = "https://juego-empanadas-backend.onrender.com";
 
+// ==============================
+// ELEMENTOS DEL DOM
+// ==============================
 const formularioLogin = document.getElementById("form-login");
 const mensajeLogin = document.getElementById("mensaje-login");
 const botonRegistro = document.getElementById("boton-registro");
 
-
 // ==============================
 // INICIAR SESIÓN
 // ==============================
-
 formularioLogin.addEventListener("submit", async (evento) => {
 
     evento.preventDefault();
@@ -18,31 +20,26 @@ formularioLogin.addEventListener("submit", async (evento) => {
     const username = document.getElementById("username").value.trim();
     const password = document.getElementById("password").value;
 
-
     // Limpiar mensaje anterior
     mensajeLogin.textContent = "";
     mensajeLogin.style.color = "";
 
-
     // ==============================
     // VALIDACIONES
     // ==============================
-
     if (!username || !password) {
         mensajeLogin.textContent = "Completa todos los campos.";
         mensajeLogin.style.color = "#d9534f";
         return;
     }
 
-
     // ==============================
     // CONEXIÓN CON EL BACKEND
     // ==============================
-
     try {
 
         const respuesta = await fetch(
-            "https://juego-empanadas-backend.onrender.com/api/auth/login",
+            `${API_URL}/api/auth/login`,
             {
                 method: "POST",
 
@@ -57,14 +54,11 @@ formularioLogin.addEventListener("submit", async (evento) => {
             }
         );
 
-
         const datos = await respuesta.json();
-
 
         // ==============================
         // ERROR DEL BACKEND
         // ==============================
-
         if (!respuesta.ok) {
 
             mensajeLogin.textContent =
@@ -75,33 +69,31 @@ formularioLogin.addEventListener("submit", async (evento) => {
             return;
         }
 
-
         // ==============================
         // LOGIN CORRECTO
         // ==============================
+        if (datos.token) {
+            localStorage.setItem("token", datos.token);
+        }
 
-        localStorage.setItem("token", datos.token);
-
-        localStorage.setItem(
-            "usuario",
-            JSON.stringify(datos.usuario)
-        );
-
+        if (datos.usuario) {
+            localStorage.setItem(
+                "usuario",
+                JSON.stringify(datos.usuario)
+            );
+        }
 
         mensajeLogin.textContent =
             "¡Inicio de sesión correcto!";
 
         mensajeLogin.style.color = "#4caf50";
 
-
-        // Esperar un momento para que
-        // el usuario vea el mensaje
+        // Esperar un momento para que el usuario vea el mensaje
         setTimeout(() => {
 
             window.location.href = "niveles.html";
 
         }, 500);
-
 
     } catch (error) {
 
@@ -115,13 +107,13 @@ formularioLogin.addEventListener("submit", async (evento) => {
 
 });
 
-
 // ==============================
 // BOTÓN CREAR CUENTA
 // ==============================
+if (botonRegistro) {
+    botonRegistro.addEventListener("click", () => {
 
-botonRegistro.addEventListener("click", () => {
+        window.location.href = "registro.html";
 
-    window.location.href = "registro.html";
-
-});
+    });
+}
