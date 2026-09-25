@@ -116,98 +116,138 @@ box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 /* =========================
-ZONA CLIENTES
+   ZONA CLIENTES
 ========================= */
 
 .clientes {
-position: absolute;
+    position: absolute;
 
-top: 250px;
-left: 0;
+    top: 150px; /* Subimos la zona para que los personajes más grandes tengan espacio arriba */
+    left: 0;
 
-width: 100%;
+    width: 100%;
 
-height: calc(50vh - 10px);
+    height: calc(60vh - 10px); /* Damos más altura libre dentro del escenario */
 
-display: flex;
+    display: flex;
 
-justify-content: space-around;
+    justify-content: space-around;
 
-align-items: flex-end;
+    align-items: flex-end;
 
-padding: 0 8%;
+    padding: 0 5%;
 
-z-index: 5;
-
+    z-index: 5;
 }
 
 .cliente {
-position: relative;
+    position: relative;
 
-display: flex;
+    display: flex;
 
-flex-direction: column;
+    flex-direction: column;
 
-align-items: center;
+    align-items: center;
 
-transition:
-    opacity 0.5s ease,
-    transform 0.5s ease;
+    justify-content: flex-end;
 
+    transition:
+        opacity 0.5s ease,
+        transform 0.5s ease;
 }
 
 .imagen-cliente {
-height: 450px;
+    width: auto;
 
-width: auto;
+    object-fit: contain;
 
-object-fit: contain;
+    object-position: bottom center;
+}
 
+
+/* =========================
+   TAMAÑOS INDIVIDUALES POR CLIENTE
+   (Empareja la escala visual según el archivo PNG)
+========================= */
+
+/* Cliente 1 (Chica): Requiere mayor altura por el lienzo transparente */
+.cliente:nth-child(1) .imagen-cliente {
+    height: 600px;
+    transform: translateY(120px);
+}
+
+/* Cliente 2 (Niño del medio): Requiere mayor altura por el lienzo transparente */
+.cliente:nth-child(2) .imagen-cliente {
+    height: 600px;
+    transform: translateY(120px);
+}
+
+/* Cliente 3 (Rubio): Mantiene la altura base porque su PNG aprovecha todo el espacio */
+.cliente:nth-child(3) .imagen-cliente {
+    height: 500px;
+    transform: translateY(80px);
 }
 
 /* =========================
-PEDIDO DEL CLIENTE
+   PEDIDO DEL CLIENTE (GENERAL)
 ========================= */
 
 .pedido {
-position: absolute;
+    position: absolute;
 
-bottom: 105%;
+    /* Eliminamos 'bottom: 105%' para usar una posición absoluta fija en px */
+    background-color: #ffffff;
 
-background-color: #ffffff;
+    border: 3px solid #333;
 
-border: 3px solid #333;
+    border-radius: 15px;
 
-border-radius: 15px;
+    padding: 8px 12px;
 
-padding: 8px 12px;
+    text-align: center;
 
-text-align: center;
+    min-width: 120px;
 
-min-width: 120px;
+    z-index: 10;
 
-box-shadow:
-    0 4px 10px rgba(0, 0, 0, 0.3);
-
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .pedido p {
-margin: 0;
+    margin: 0;
 
-font-size: 12px;
+    font-size: 12px;
 
-color: #333;
+    color: #333;
 
-font-weight: bold;
-
+    font-weight: bold;
 }
 
 .icono-pedido {
-width: 35px;
-height: 35px;
+    width: 35px;
+    height: 35px;
 
-margin-top: 5px;
+    margin-top: 5px;
+}
 
+
+/* =========================
+   POSICIÓN DEL LETRERO POR CLIENTE
+========================= */
+
+/* Cliente 1 (Chica): Baja el letrero hacia su cabeza */
+.cliente:nth-child(1) .pedido {
+    top: 90px;
+}
+
+/* Cliente 2 (Niño del medio): Baja el letrero hacia su cabeza */
+.cliente:nth-child(2) .pedido {
+    top: 90px;
+}
+
+/* Cliente 3 (Rubio): Ajuste para la cabeza del rubio */
+.cliente:nth-child(3) .pedido {
+    top: -10px;
 }
 
 /* =========================

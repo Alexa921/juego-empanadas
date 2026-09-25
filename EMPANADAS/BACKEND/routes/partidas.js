@@ -8,7 +8,7 @@ const router = express.Router();
 
 
 // ========================================
-// METAS MÍNIMAS PARA SUPERAR CADA NIVEL
+// METAS DE CLIENTES POR NIVEL
 // ========================================
 
 const metasPorNivel = {
@@ -16,7 +16,8 @@ const metasPorNivel = {
     2: 6,
     3: 7,
     4: 10,
-    5: 12
+    5: 12,
+    6: 0
 };
 
 
@@ -28,7 +29,6 @@ router.post("/", authMiddleware, async (req, res) => {
 
     try {
 
-        // Extraer campos del cuerpo de la petición
         let {
             nivel,
             clientesAtendidos,
@@ -38,7 +38,7 @@ router.post("/", authMiddleware, async (req, res) => {
 
 
         // ========================================
-        // COMPROBAR DATOS OBLIGATORIOS
+        // VERIFICAR DATOS
         // ========================================
 
         if (
@@ -47,14 +47,16 @@ router.post("/", authMiddleware, async (req, res) => {
             estrellas === undefined ||
             puntuacion === undefined
         ) {
+
             return res.status(400).json({
                 mensaje: "Faltan datos de la partida"
             });
+
         }
 
 
         // ========================================
-        // CONVERSIÓN A NÚMEROS
+        // CONVERTIR A NÚMEROS
         // ========================================
 
         nivel = Number(nivel);
@@ -70,11 +72,13 @@ router.post("/", authMiddleware, async (req, res) => {
         if (
             !Number.isInteger(nivel) ||
             nivel < 1 ||
-            nivel > 5
+            nivel > 6
         ) {
+
             return res.status(400).json({
-                mensaje: "El nivel no es válido (debe ser entre 1 y 5)"
+                mensaje: "El nivel no es válido (debe ser entre 1 y 6)"
             });
+
         }
 
 
@@ -86,9 +90,11 @@ router.post("/", authMiddleware, async (req, res) => {
             !Number.isInteger(clientesAtendidos) ||
             clientesAtendidos < 0
         ) {
+
             return res.status(400).json({
                 mensaje: "La cantidad de clientes no es válida"
             });
+
         }
 
 
@@ -101,9 +107,11 @@ router.post("/", authMiddleware, async (req, res) => {
             estrellas < 0 ||
             estrellas > 3
         ) {
+
             return res.status(400).json({
                 mensaje: "La cantidad de estrellas no es válida"
             });
+
         }
 
 
@@ -116,9 +124,11 @@ router.post("/", authMiddleware, async (req, res) => {
             !Number.isFinite(puntuacion) ||
             puntuacion < 0
         ) {
+
             return res.status(400).json({
                 mensaje: "La puntuación no es válida"
             });
+
         }
 
 
@@ -126,12 +136,17 @@ router.post("/", authMiddleware, async (req, res) => {
         // BUSCAR USUARIO
         // ========================================
 
-        const usuario = await Usuario.findById(req.usuario.usuarioId);
+        const usuario = await Usuario.findById(
+            req.usuario.usuarioId
+        );
+
 
         if (!usuario) {
+
             return res.status(404).json({
                 mensaje: "Usuario no encontrado"
             });
+
         }
 
 
@@ -141,25 +156,50 @@ router.post("/", authMiddleware, async (req, res) => {
 
         let superado = false;
 
+
         if (metasPorNivel[nivel] !== undefined) {
-            superado = clientesAtendidos >= metasPorNivel[nivel];
-        } else {
-            superado = estrellas > 0;
+
+            // Nivel 6 todavía no tiene una meta
+            // definida en este backend.
+
+            if (nivel === 6) {
+
+                superado = estrellas > 0;
+
+            } else {
+
+                superado =
+                    clientesAtendidos >= metasPorNivel[nivel];
+
+            }
+
         }
 
 
         // ========================================
-        // GUARDAR INTENTO
+        // CREAR PARTIDA
         // ========================================
 
         const nuevaPartida = new Partida({
+
             usuarioId: usuario._id,
+
             nivel: nivel,
-            clientesAtendidos: clientesAtendidos,
-            estrellas: estrellas,
-            puntuacion: puntuacion,
-            superado: superado
+
+            clientesAtendidos:
+                clientesAtendidos,
+
+            estrellas:
+                estrellas,
+
+            puntuacion:
+                puntuacion,
+
+            superado:
+                superado
+
         });
+
 
         await nuevaPartida.save();
 
@@ -170,11 +210,15 @@ router.post("/", authMiddleware, async (req, res) => {
 
         if (
             superado === true &&
-            nivel === usuario.nivelDesbloqueado &&
-            nivel < 5
+            nivel < 6 &&
+            nivel >= usuario.nivelDesbloqueado
         ) {
-            usuario.nivelDesbloqueado = nivel + 1;
+
+            usuario.nivelDesbloqueado =
+                nivel + 1;
+
             await usuario.save();
+
         }
 
 
@@ -183,34 +227,65 @@ router.post("/", authMiddleware, async (req, res) => {
         // ========================================
 
         res.status(201).json({
-            mensaje: "Partida guardada correctamente",
+
+            mensaje:
+                "Partida guardada correctamente",
 
             partida: {
-                id: nuevaPartida._id,
-                nivel: nuevaPartida.nivel,
-                clientesAtendidos: nuevaPartida.clientesAtendidos,
-                estrellas: nuevaPartida.estrellas,
-                puntuacion: nuevaPartida.puntuacion,
-                superado: nuevaPartida.superado,
-                fecha: nuevaPartida.fecha
+
+                id:
+                    nuevaPartida._id,
+
+                nivel:
+                    nuevaPartida.nivel,
+
+                clientesAtendidos:
+                    nuevaPartida.clientesAtendidos,
+
+                estrellas:
+                    nuevaPartida.estrellas,
+
+                puntuacion:
+                    nuevaPartida.puntuacion,
+
+                superado:
+                    nuevaPartida.superado,
+
+                fecha:
+                    nuevaPartida.fecha
+
             },
 
             usuario: {
-                username: usuario.username,
-                nivelDesbloqueado: usuario.nivelDesbloqueado
+
+                username:
+                    usuario.username,
+
+                nivelDesbloqueado:
+                    usuario.nivelDesbloqueado
+
             }
+
         });
+
 
     } catch (error) {
 
-        console.error("Error al guardar partida:", error);
+        console.error(
+            "Error al guardar partida:",
+            error
+        );
 
         res.status(500).json({
-            mensaje: "Error interno del servidor"
+
+            mensaje:
+                "Error interno del servidor"
+
         });
+
     }
+
 });
 
 
 module.exports = router;
-
