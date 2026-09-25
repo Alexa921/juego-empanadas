@@ -1,0 +1,927 @@
+/* =========================
+CONFIGURACIÓN GENERAL
+========================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  }
+
+body {
+width: 100vw;
+height: 100vh;
+
+font-family: 'Arial Black', Arial, sans-serif;
+
+overflow: hidden;
+
+user-select: none;
+
+}
+
+/* =========================
+ESCENARIO DEL JUEGO
+========================= */
+
+.juego {
+position: relative;
+
+width: 100%;
+height: 100vh;
+
+background-image: url("../img/escenario/fondo-nivel3.jpg");
+
+background-size: cover;
+background-position: center;
+
+}
+
+/* =========================
+BARRA SUPERIOR - HUD
+========================= */
+
+.barra-superior {
+position: absolute;
+
+top: 15px;
+left: 0;
+
+width: 100%;
+
+display: flex;
+
+justify-content: space-around;
+align-items: center;
+
+z-index: 20;
+
+}
+
+.puntos,
+.nivel-actual,
+.tiempo {
+padding: 8px 20px;
+
+border-radius: 25px;
+
+background-color: rgba(0, 0, 0, 0.75);
+
+border: 2px solid #fff;
+
+color: #fff;
+
+font-size: 20px;
+
+font-weight: bold;
+
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+
+}
+
+/* =========================
+MENSAJE DEL JUEGO
+========================= */
+
+.mensaje {
+position: absolute;
+
+top: 75px;
+left: 50%;
+
+transform: translateX(-50%);
+
+padding: 10px 25px;
+
+min-width: 300px;
+
+background-color: rgba(0, 0, 0, 0.85);
+
+color: #fff;
+
+border: 2px solid #f5a623;
+
+border-radius: 12px;
+
+font-size: 16px;
+
+font-weight: bold;
+
+text-align: center;
+
+z-index: 50;
+
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+
+}
+
+/* =========================
+ZONA CLIENTES
+========================= */
+
+.clientes {
+position: absolute;
+
+top: 250px;
+left: 0;
+
+width: 100%;
+
+height: calc(50vh - 10px);
+
+display: flex;
+
+justify-content: space-around;
+
+align-items: flex-end;
+
+padding: 0 8%;
+
+z-index: 5;
+
+}
+
+.cliente {
+position: relative;
+
+display: flex;
+
+flex-direction: column;
+
+align-items: center;
+
+transition:
+    opacity 0.5s ease,
+    transform 0.5s ease;
+
+}
+
+.imagen-cliente {
+height: 450px;
+
+width: auto;
+
+object-fit: contain;
+
+}
+
+/* =========================
+PEDIDO DEL CLIENTE
+========================= */
+
+.pedido {
+position: absolute;
+
+bottom: 105%;
+
+background-color: #ffffff;
+
+border: 3px solid #333;
+
+border-radius: 15px;
+
+padding: 8px 12px;
+
+text-align: center;
+
+min-width: 120px;
+
+box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.3);
+
+}
+
+.pedido p {
+margin: 0;
+
+font-size: 12px;
+
+color: #333;
+
+font-weight: bold;
+
+}
+
+.icono-pedido {
+width: 35px;
+height: 35px;
+
+margin-top: 5px;
+
+}
+
+/* =========================
+CLIENTE ATENDIDO
+========================= */
+
+.cliente.atendido {
+animation: clienteAtendido 0.5s ease;
+}
+
+@keyframes clienteAtendido {
+
+0% {
+    transform: scale(1);
+}
+
+50% {
+    transform: scale(1.15);
+}
+
+100% {
+    transform: scale(1);
+}
+
+}
+
+/* =========================
+CHULO DEL CLIENTE
+========================= */
+
+.chulo-cliente {
+position: absolute;
+
+top: -40px;
+right: -20px;
+
+width: 55px;
+height: 55px;
+
+display: flex;
+
+align-items: center;
+justify-content: center;
+
+background-color: #35c759;
+
+border: 4px solid white;
+
+border-radius: 50%;
+
+color: white;
+
+font-size: 32px;
+
+font-weight: bold;
+
+z-index: 20;
+
+animation: aparecerChulo 0.3s ease;
+
+}
+
+@keyframes aparecerChulo {
+
+from {
+    transform: scale(0);
+    opacity: 0;
+}
+
+to {
+    transform: scale(1);
+    opacity: 1;
+}
+
+}
+
+/* =========================
+MOSTRADOR
+MESA + FREIDORA
+========================= */
+
+.mostrador-cocina {
+position: absolute;
+
+bottom: 0;
+left: 0;
+
+width: 100%;
+
+height: 52vh;
+
+background-image: url("../img/escenario/mesa-freidora.png");
+
+background-size: 100% 100%;
+
+background-repeat: no-repeat;
+
+display: grid;
+
+grid-template-columns: 1fr 1fr 1fr;
+
+align-items: flex-end;
+
+padding: 20px 30px 30px 30px;
+
+z-index: 10;
+
+}
+
+/* =========================
+ESTACIONES
+========================= */
+
+.preparacion,
+.entrega,
+.coccion {
+position: relative;
+
+display: flex;
+
+flex-direction: column;
+
+align-items: center;
+
+justify-content: flex-end;
+
+height: 100%;
+
+}
+
+/* =========================
+PREPARACIÓN
+COLUMNA 1
+========================= */
+
+.preparacion {
+grid-column: 1;
+
+margin-left: 18%;
+
+transform: translate(70px, 120px);
+
+}
+
+/* =========================
+ENTREGA
+COLUMNA 2
+========================= */
+
+.entrega {
+grid-column: 2;
+
+margin-left: auto;
+
+margin-right: 60%;
+
+margin-bottom: 8.5%;
+
+transform: translate(90px, -100px);
+
+}
+
+/* =========================
+COCCIÓN
+COLUMNA 3
+========================= */
+
+.coccion {
+grid-column: 3;
+
+margin-right: 10%;
+
+transform: translate(30px, 20px);
+
+display: flex;
+
+flex-direction: row;
+
+align-items: flex-end;
+
+justify-content: center;
+
+gap: 25px;
+
+}
+
+/* =========================
+PARRILLAS
+========================= */
+
+.parrilla {
+position: relative;
+
+display: flex;
+
+flex-direction: column;
+
+align-items: center;
+
+justify-content: flex-end;
+
+height: 100%;
+
+min-width: 180px;
+
+}
+
+/* =========================
+TÍTULO DE LA PARRILLA
+========================= */
+
+.parrilla h3 {
+color: #fff;
+
+font-size: 14px;
+
+text-shadow: 2px 2px 4px #000;
+
+margin-bottom: 5px;
+
+text-align: center;
+
+}
+
+/* =========================
+TÍTULOS DE ESTACIONES
+========================= */
+
+.preparacion h2,
+.coccion h2,
+.entrega h2 {
+color: #fff;
+
+font-size: 16px;
+
+text-shadow: 2px 2px 4px #000;
+
+margin-bottom: 8px;
+
+}
+
+/* =========================
+ZONA DE LA MASA
+========================= */
+
+.zona-masa {
+width: 180px;
+height: 120px;
+
+display: flex;
+
+justify-content: center;
+align-items: center;
+
+}
+
+.zona-masa img {
+max-width: 150px;
+}
+
+/* =========================
+INGREDIENTES
+========================= */
+
+.lista-ingredientes {
+display: flex;
+
+gap: 10px;
+
+margin: 10px 0;
+
+justify-content: center;
+
+flex-wrap: nowrap;
+
+}
+
+.ingrediente {
+display: flex;
+
+flex-direction: column;
+
+align-items: center;
+
+}
+
+.ingrediente button {
+border: none;
+
+background: rgba(255, 255, 255, 0.2);
+
+border-radius: 50%;
+
+padding: 5px;
+
+cursor: pointer;
+
+transition: transform 0.1s ease;
+
+}
+
+.ingrediente button:hover {
+transform: scale(1.1);
+}
+
+.ingrediente button:active {
+transform: scale(0.9);
+}
+
+.ingrediente button:disabled {
+opacity: 0.45;
+
+cursor: not-allowed;
+
+transform: none;
+
+}
+
+.ingrediente img {
+width: 45px;
+height: 45px;
+
+object-fit: contain;
+
+}
+
+.ingrediente p {
+color: #fff;
+
+font-size: 11px;
+
+text-shadow: 1px 1px 3px #000;
+
+margin-top: 2px;
+
+}
+
+/* =========================
+ZONA FREIDORA
+========================= */
+
+.zona-freidora {
+position: relative;
+
+width: 160px;
+height: 120px;
+
+display: flex;
+
+justify-content: center;
+
+align-items: center;
+
+}
+
+.empanada {
+width: 105px;
+
+max-width: 105px;
+
+height: auto;
+
+object-fit: contain;
+
+}
+
+/* =========================
+CONTROLES DE COCCIÓN
+========================= */
+
+.controles-coccion {
+display: flex;
+gap: 6px;
+
+
+}
+
+/* =========================
+ENTREGA
+========================= */
+
+.entrega img {
+width: 105px;
+
+height: 105px;
+
+object-fit: contain;
+
+margin-bottom: 6px;
+
+}
+
+.controles-entrega {
+display: flex;
+
+gap: 6px;
+
+}
+
+/* =========================
+BOTONES DE ACCIÓN
+========================= */
+
+.boton-accion {
+padding: 8px 16px;
+
+border: 2px solid #fff;
+
+border-radius: 12px;
+
+background-color: #f5a623;
+
+color: white;
+
+font-size: 14px;
+
+font-weight: bold;
+
+cursor: pointer;
+
+box-shadow: 0 4px 0 #b8750a;
+
+transition: all 0.1s ease;
+
+}
+
+.boton-accion:hover {
+transform: scale(1.05);
+}
+
+.boton-accion:active {
+box-shadow: 0 1px 0 #b8750a;
+
+transform: translateY(3px);
+
+}
+
+.boton-accion:disabled {
+opacity: 0.45;
+
+cursor: not-allowed;
+
+filter: grayscale(0.5);
+
+transform: none;
+
+}
+
+/* =========================
+BOTÓN VOLVER
+========================= */
+
+.enlace-volver {
+position: absolute;
+
+bottom: 30px;
+left: 30px;
+
+z-index: 100;
+
+text-decoration: none;
+
+}
+
+.btn-volver {
+padding: 18px 40px;
+
+border: 2px solid #fff;
+
+border-radius: 20px;
+
+background-color: #f5a623;
+
+color: white;
+
+font-size: 22px;
+
+font-weight: bold;
+
+cursor: pointer;
+
+box-shadow: 0 5px 0 #b8750a;
+
+transition: transform 0.2s ease;
+
+}
+
+.btn-volver:hover {
+transform: scale(1.08);
+}
+
+.btn-volver:active {
+transform: translateY(4px);
+
+box-shadow: 0 1px 0 #b8750a;
+
+}
+
+/* =========================
+DINERO EN LA MESA
+========================= */
+
+.dinero-mesa {
+position: absolute;
+
+width: 70px;
+height: 45px;
+
+display: flex;
+
+align-items: center;
+justify-content: center;
+
+background: #4caf50;
+
+border: 3px solid #fff;
+
+border-radius: 8px;
+
+color: white;
+
+font-size: 18px;
+
+font-weight: bold;
+
+cursor: pointer;
+
+z-index: 25;
+
+box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.4);
+
+animation: aparecerDinero 0.4s ease;
+
+}
+
+.dinero-mesa:hover {
+transform: scale(1.1);
+}
+
+@keyframes aparecerDinero {
+
+from {
+    transform: scale(0) rotate(-20deg);
+
+    opacity: 0;
+}
+
+to {
+    transform: scale(1) rotate(0);
+
+    opacity: 1;
+}
+
+}
+
+/* =========================
+PANTALLA FINAL
+========================= */
+
+.pantalla-final {
+position: fixed;
+
+top: 0;
+left: 0;
+
+width: 100%;
+height: 100%;
+
+background-color: rgba(0, 0, 0, 0.75);
+
+display: flex;
+
+align-items: center;
+justify-content: center;
+
+z-index: 200;
+
+}
+
+/* =========================
+PANEL FINAL
+========================= */
+
+.panel-final {
+width: 450px;
+
+max-width: 90%;
+
+padding: 35px;
+
+background-color: #fff;
+
+border: 5px solid #f5a623;
+
+border-radius: 25px;
+
+text-align: center;
+
+box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.5);
+
+animation: aparecerFinal 0.5s ease;
+
+}
+
+/* =========================
+TÍTULO FINAL
+========================= */
+
+.panel-final h1 {
+font-size: 32px;
+
+color: #f5a623;
+
+margin-bottom: 15px;
+
+}
+
+/* =========================
+ESTRELLAS
+========================= */
+
+.estrellas {
+font-size: 45px;
+
+margin: 15px 0;
+
+}
+
+/* =========================
+ESTADÍSTICAS
+========================= */
+
+.estadistica-final {
+font-size: 20px;
+
+margin: 10px 0;
+
+color: #333;
+
+}
+
+/* =========================
+RESULTADO
+========================= */
+
+.resultado-final {
+font-size: 24px;
+
+font-weight: bold;
+
+margin: 20px 0;
+
+}
+
+/* =========================
+BOTONES FINALES
+========================= */
+
+.botones-final {
+display: flex;
+
+flex-direction: column;
+
+gap: 12px;
+
+align-items: center;
+
+}
+
+.boton-final {
+width: 80%;
+
+padding: 12px;
+
+border: none;
+
+border-radius: 15px;
+
+background-color: #f5a623;
+
+color: white;
+
+font-size: 18px;
+
+font-weight: bold;
+
+cursor: pointer;
+
+transition: transform 0.2s ease;
+
+}
+
+.boton-final:hover {
+transform: scale(1.05);
+}
+
+/* =========================
+ANIMACIÓN PANTALLA FINAL
+========================= */
+
+@keyframes aparecerFinal {
+
+from {
+    transform: scale(0.7);
+
+    opacity: 0;
+}
+
+to {
+    transform: scale(1);
+
+    opacity: 1;
+}
+
+}
