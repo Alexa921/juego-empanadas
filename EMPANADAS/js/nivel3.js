@@ -1,4 +1,3 @@
-javascript
 // ================================
 // VARIABLES DEL JUEGO
 // ================================
@@ -433,7 +432,7 @@ function obtenerNombreRelleno(
 ) {
 
     if (relleno === "pina") {
-        return "piña";
+        return "hawaiana";
     }
 
     return relleno;
@@ -833,7 +832,7 @@ function mostrarProteinaSobreMasa(
     } else if (relleno === "pina") {
 
         proteina.src =
-            "img/rellenos/piña.png";
+            "img/rellenos/hawaiana.png";
     }
 
 
@@ -1731,7 +1730,7 @@ function actualizarEntrega() {
     ) {
 
         empanadaFinal.src =
-            "img/rellenos/hawaiana.png";
+            "img/empanada/empanada-dorada.png";
 
     } else {
 
@@ -2649,36 +2648,16 @@ function actualizarFinPorDinero() {
 
 function limpiarTemporizadoresCoccion() {
 
-    clearTimeout(
-        temporizadorCoccion1
-    );
+    clearTimeout(temporizadorCoccion1);
+    clearTimeout(temporizadorCoccion2);
+    clearTimeout(temporizadorQuemado1);
+    clearTimeout(temporizadorQuemado2);
 
-    clearTimeout(
-        temporizadorCoccion2
-    );
-
-    clearTimeout(
-        temporizadorQuemado1
-    );
-
-    clearTimeout(
-        temporizadorQuemado2
-    );
-
-
-    temporizadorCoccion1 =
-        null;
-
-    temporizadorCoccion2 =
-        null;
-
-    temporizadorQuememado1 =
-        null;
-
-    temporizadorQuemado2 =
-        null;
+    temporizadorCoccion1 = null;
+    temporizadorCoccion2 = null;
+    temporizadorQuemado1 = null; 
+    temporizadorQuemado2 = null;
 }
-
 
 // ================================
 // DESACTIVAR CONTROLES
@@ -3151,25 +3130,20 @@ temporizador =
             actualizarTiempo();
 
 
-            if (
-                tiempo <= 0
-            ) {
+            if (tiempo <= 0) {
 
                 tiempo = 0;
 
                 actualizarTiempo();
 
-
-                clearInterval(
-                    temporizador
-                );
-
+                clearInterval(temporizador);
+                clearInterval(temporizadorPaciencia);
 
                 limpiarTemporizadoresCoccion();
 
+                nivelTerminado = true;
 
                 desactivarControles();
-
 
                 mostrarPantallaFinal();
             }
@@ -3229,14 +3203,11 @@ async function guardarPartida() {
     }
 
 
-    guardandoPartida =
-        true;
+    guardandoPartida = true;
 
 
     const token =
-        localStorage.getItem(
-            "token"
-        );
+        localStorage.getItem("token");
 
 
     if (!token) {
@@ -3245,8 +3216,7 @@ async function guardarPartida() {
             "❌ No se encontró el token de autenticación."
         );
 
-        guardandoPartida =
-            false;
+        guardandoPartida = false;
 
         return null;
     }
@@ -3254,15 +3224,18 @@ async function guardarPartida() {
 
     try {
 
+        // ========================================
+        // CONEXIÓN CON EL BACKEND DE RENDER
+        // ========================================
+
         const respuesta =
             await fetch(
-                "http://localhost:3000/api/partidas",
+                "https://juego-empanadas-backend.onrender.com/api/partidas",
                 {
                     method: "POST",
 
                     headers: {
-                        "Content-Type":
-                            "application/json",
+                        "Content-Type": "application/json",
 
                         "Authorization":
                             `Bearer ${token}`
@@ -3295,6 +3268,10 @@ async function guardarPartida() {
         );
 
 
+        // ========================================
+        // COMPROBAR SI EL SERVIDOR RESPONDIÓ CON ERROR
+        // ========================================
+
         if (!respuesta.ok) {
 
             throw new Error(
@@ -3303,6 +3280,10 @@ async function guardarPartida() {
             );
         }
 
+
+        // ========================================
+        // GUARDAR SI EL NIVEL FUE SUPERADO
+        // ========================================
 
         partidaSuperada =
             datos.partida &&
@@ -3313,9 +3294,9 @@ async function guardarPartida() {
             true;
 
 
-        // ================================
+        // ========================================
         // ACTUALIZAR USUARIO LOCAL
-        // ================================
+        // ========================================
 
         if (
             datos.usuario &&
@@ -3324,9 +3305,7 @@ async function guardarPartida() {
 
             const usuarioGuardado =
                 JSON.parse(
-                    localStorage.getItem(
-                        "usuario"
-                    )
+                    localStorage.getItem("usuario")
                 );
 
 
@@ -3370,6 +3349,7 @@ async function guardarPartida() {
 
 
         return partidaSuperada;
+
 
     } catch (error) {
 

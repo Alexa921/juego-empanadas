@@ -1,172 +1,346 @@
-const formularioRegistro = document.getElementById("form-registro");
-const mensajeRegistro = document.getElementById("mensaje-registro");
-const botonLogin = document.getElementById("boton-login");
+// ==============================
+// ELEMENTOS DEL DOM
+// ==============================
+
+const formularioRegistro =
+    document.getElementById("form-registro");
+
+const mensajeRegistro =
+    document.getElementById("mensaje-registro");
+
+const botonLogin =
+    document.getElementById("boton-login");
+
+const botonRegistrar =
+    formularioRegistro.querySelector(
+        'button[type="submit"]'
+    );
+
 
 // ==============================
 // CONFIGURACIÓN DE LA API
 // ==============================
 
-const API_URL = "https://juego-empanadas-backend.onrender.com";
+const API_URL =
+    "https://juego-empanadas-backend.onrender.com";
+
+
+// ==============================
+// ESTADO DEL REGISTRO
+// ==============================
+
+let registrandoUsuario = false;
+
 
 // ==============================
 // REGISTRO DE USUARIO
 // ==============================
 
-formularioRegistro.addEventListener("submit", async (evento) => {
+formularioRegistro.addEventListener(
+    "submit",
+    async (evento) => {
 
-    evento.preventDefault();
-
-    const username = document.getElementById("username").value.trim();
-    const password = document.getElementById("password").value;
-    const confirmPassword = document.getElementById("confirm-password").value;
+        evento.preventDefault();
 
 
-    // Limpiar mensaje anterior
-    mensajeRegistro.textContent = "";
-    mensajeRegistro.style.color = "";
+        // ==================================
+        // EVITAR VARIOS CLICS
+        // ==================================
+
+        if (registrandoUsuario) {
+            return;
+        }
 
 
-    // ==============================
-    // VALIDAR CAMPOS
-    // ==============================
+        const username =
+            document
+                .getElementById("username")
+                .value
+                .trim();
 
-    if (!username || !password || !confirmPassword) {
+        const password =
+            document
+                .getElementById("password")
+                .value;
 
-        mensajeRegistro.textContent =
-            "Completa todos los campos.";
-
-        mensajeRegistro.style.color = "#d9534f";
-
-        return;
-    }
-
-
-    // ==============================
-    // VALIDAR USUARIO
-    // ==============================
-
-    if (username.length < 3) {
-
-        mensajeRegistro.textContent =
-            "El usuario debe tener mínimo 3 caracteres.";
-
-        mensajeRegistro.style.color = "#d9534f";
-
-        return;
-    }
+        const confirmPassword =
+            document
+                .getElementById("confirm-password")
+                .value;
 
 
-    // ==============================
-    // VALIDAR CONTRASEÑA
-    // ==============================
+        // ==================================
+        // LIMPIAR MENSAJE ANTERIOR
+        // ==================================
 
-    if (password.length < 6) {
-
-        mensajeRegistro.textContent =
-            "La contraseña debe tener mínimo 6 caracteres.";
-
-        mensajeRegistro.style.color = "#d9534f";
-
-        return;
-    }
+        mensajeRegistro.textContent = "";
+        mensajeRegistro.style.color = "";
 
 
-    // ==============================
-    // CONFIRMAR CONTRASEÑA
-    // ==============================
+        // ==================================
+        // VALIDAR CAMPOS
+        // ==================================
 
-    if (password !== confirmPassword) {
-
-        mensajeRegistro.textContent =
-            "Las contraseñas no coinciden.";
-
-        mensajeRegistro.style.color = "#d9534f";
-
-        return;
-    }
-
-
-    // ==============================
-    // ENVIAR AL BACKEND
-    // ==============================
-
-    try {
-
-        const respuesta = await fetch(
-            `${API_URL}/api/auth/registro`,
-            {
-                method: "POST",
-
-                headers: {
-                    "Content-Type": "application/json"
-                },
-
-                body: JSON.stringify({
-                    username: username,
-                    password: password
-                })
-            }
-        );
-
-
-        const datos = await respuesta.json();
-
-
-        // ==============================
-        // ERROR DEL BACKEND
-        // ==============================
-
-        if (!respuesta.ok) {
+        if (
+            !username ||
+            !password ||
+            !confirmPassword
+        ) {
 
             mensajeRegistro.textContent =
-                datos.mensaje || "No se pudo crear la cuenta.";
+                "Completa todos los campos.";
 
-            mensajeRegistro.style.color = "#d9534f";
+            mensajeRegistro.style.color =
+                "#d9534f";
 
             return;
         }
 
 
-        // ==============================
-        // REGISTRO CORRECTO
-        // ==============================
+        // ==================================
+        // VALIDAR USUARIO
+        // ==================================
+
+        if (username.length < 3) {
+
+            mensajeRegistro.textContent =
+                "El usuario debe tener mínimo 3 caracteres.";
+
+            mensajeRegistro.style.color =
+                "#d9534f";
+
+            return;
+        }
+
+
+        // ==================================
+        // VALIDAR CONTRASEÑA
+        // ==================================
+
+        if (password.length < 6) {
+
+            mensajeRegistro.textContent =
+                "La contraseña debe tener mínimo 6 caracteres.";
+
+            mensajeRegistro.style.color =
+                "#d9534f";
+
+            return;
+        }
+
+
+        // ==================================
+        // CONFIRMAR CONTRASEÑA
+        // ==================================
+
+        if (password !== confirmPassword) {
+
+            mensajeRegistro.textContent =
+                "Las contraseñas no coinciden.";
+
+            mensajeRegistro.style.color =
+                "#d9534f";
+
+            return;
+        }
+
+
+        // ==================================
+        // ACTIVAR ESTADO DE REGISTRO
+        // ==================================
+
+        registrandoUsuario = true;
+
+
+        // Desactivar botón
+        if (botonRegistrar) {
+
+            botonRegistrar.disabled =
+                true;
+
+            botonRegistrar.dataset.textoOriginal =
+                botonRegistrar.textContent;
+
+            botonRegistrar.textContent =
+                "CREANDO...";
+        }
+
 
         mensajeRegistro.textContent =
-            "¡Cuenta creada correctamente!";
+            "Creando cuenta...";
 
-        mensajeRegistro.style.color = "#4caf50";
-
-
-        // Limpiar formulario
-        formularioRegistro.reset();
+        mensajeRegistro.style.color =
+            "#555";
 
 
-        // Ir al login después de un momento
-        setTimeout(() => {
+        // ==================================
+        // ENVIAR AL BACKEND
+        // ==================================
 
-            window.location.href = "login.html";
+        try {
 
-        }, 1000);
+            const respuesta =
+                await fetch(
+                    `${API_URL}/api/auth/registro`,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify({
+                                username:
+                                    username,
+
+                                password:
+                                    password
+                            })
+                    }
+                );
 
 
-    } catch (error) {
+            // ==================================
+            // LEER RESPUESTA
+            // ==================================
 
-        console.error("Error al registrar usuario:", error);
+            const datos =
+                await respuesta.json();
 
-        mensajeRegistro.textContent =
-            "No se pudo conectar con el servidor.";
 
-        mensajeRegistro.style.color = "#d9534f";
+            console.log(
+                "📦 Respuesta del registro:",
+                datos
+            );
+
+
+            // ==================================
+            // ERROR DEL BACKEND
+            // ==================================
+
+            if (!respuesta.ok) {
+
+                mensajeRegistro.textContent =
+                    datos.mensaje ||
+                    "No se pudo crear la cuenta.";
+
+                mensajeRegistro.style.color =
+                    "#d9534f";
+
+
+                registrandoUsuario =
+                    false;
+
+
+                // Volver a activar botón
+                if (botonRegistrar) {
+
+                    botonRegistrar.disabled =
+                        false;
+
+                    botonRegistrar.textContent =
+                        botonRegistrar.dataset
+                            .textoOriginal ||
+                        "REGISTRAR";
+                }
+
+
+                return;
+            }
+
+
+            // ==================================
+            // REGISTRO CORRECTO
+            // ==================================
+
+            mensajeRegistro.textContent =
+                "¡Cuenta creada correctamente!";
+
+            mensajeRegistro.style.color =
+                "#4caf50";
+
+
+            console.log(
+                "✅ Usuario registrado correctamente."
+            );
+
+
+            // ==================================
+            // LIMPIAR FORMULARIO
+            // ==================================
+
+            formularioRegistro.reset();
+
+
+            // ==================================
+            // IR AL LOGIN
+            // ==================================
+
+            setTimeout(
+                () => {
+
+                    window.location.href =
+                        "login.html";
+
+                },
+                1000
+            );
+
+        } catch (error) {
+
+            console.error(
+                "❌ Error al registrar usuario:",
+                error
+            );
+
+
+            mensajeRegistro.textContent =
+                "No se pudo conectar con el servidor.";
+
+            mensajeRegistro.style.color =
+                "#d9534f";
+
+
+            // ==================================
+            // PERMITIR INTENTAR DE NUEVO
+            // ==================================
+
+            registrandoUsuario =
+                false;
+
+
+            if (botonRegistrar) {
+
+                botonRegistrar.disabled =
+                    false;
+
+                botonRegistrar.textContent =
+                    botonRegistrar.dataset
+                        .textoOriginal ||
+                    "REGISTRAR";
+            }
+        }
+
     }
+);
 
-});
 
 // ==============================
 // IR AL LOGIN
 // ==============================
 
-botonLogin.addEventListener("click", () => {
+if (botonLogin) {
 
-    window.location.href = "login.html";
+    botonLogin.addEventListener(
+        "click",
+        () => {
 
-});
+            window.location.href =
+                "login.html";
+
+        }
+    );
+}
+

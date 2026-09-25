@@ -3140,7 +3140,7 @@ async function guardarPartida() {
 
         const respuesta =
             await fetch(
-                "http://localhost:3000/api/partidas",
+                "https://juego-empanadas-backend.onrender.com/api/partidas",
                 {
                     method: "POST",
 
