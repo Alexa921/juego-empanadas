@@ -14,31 +14,54 @@ const app = express();
 
 // Lista de orígenes permitidos
 const allowedOrigins = [
-  "https://juego-empanadas.netlify.app",
-  "http://juego-empanadas.netlify.app",
-  "http://localhost:5173",
-  "http://localhost:3000"
+"https://juego-empanadas.netlify.app",
+"http://juego-empanadas.netlify.app",
+"http://localhost:5173",
+"http://localhost:3000"
 ];
 
 const corsOptions = {
-  origin: function (origin, callback) {
-    // Permite solicitudes sin origin (como herramientas de prueba o llamadas directas)
-    // o si el origen está explícitamente en la lista
+origin: function (origin, callback) {
+
+    // Permite solicitudes sin origin
+    // o cualquier origen para evitar bloqueos
+    // durante las pruebas.
     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
+        callback(null, true);
     } else {
-      // Si por alguna razón la URL en Netlify varía ligeramente, no bloquearás el backend
-      callback(null, true);
+        callback(null, true);
     }
-  },
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-  credentials: true
+},
+
+methods: [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE",
+    "OPTIONS"
+],
+
+allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+    "X-Requested-With"
+],
+
+credentials: true
+
+
 };
 
-// Habilitar peticiones preflight para todas las rutas
+// ==============================
+// HABILITAR CORS
+// ==============================
+
 app.options("*", cors(corsOptions));
 app.use(cors(corsOptions));
+
+// ==============================
+// JSON
+// ==============================
 
 app.use(express.json());
 
@@ -47,16 +70,57 @@ app.use(express.json());
 // ==============================
 
 app.use("/api/auth", authRoutes);
-app.use("/api/partidas", partidasRoutes);
+
+// Registro temporal para comprobar
+// si la petición de partidas llega
+// realmente al servidor.
+
+app.use("/api/partidas", (req, res, next) => {
+
+
+console.log(
+    "📥 PETICIÓN RECIBIDA:",
+    req.method,
+    req.originalUrl
+);
+
+next();
+
+
+}, partidasRoutes);
 
 // ==============================
 // RUTA DE PRUEBA
 // ==============================
 
 app.get("/", (req, res) => {
-    res.json({
-        mensaje: "Servidor del juego de empanadas funcionando"
-    });
+
+
+res.json({
+    mensaje:
+        "Servidor del juego de empanadas funcionando"
+});
+
+
+});
+
+// ==============================
+// PUERTO DEL SERVIDOR
+// ==============================
+
+const PORT = process.env.PORT || 3000;
+
+// ==============================
+// INICIAR SERVIDOR
+// ==============================
+
+app.listen(PORT, () => {
+
+console.log(
+    `🚀 Servidor funcionando en el puerto ${PORT}`
+);
+
+
 });
 
 // ==============================
@@ -64,19 +128,24 @@ app.get("/", (req, res) => {
 // ==============================
 
 mongoose
-    .connect(process.env.MONGO_URI)
-    .then(() => {
-        console.log("✅ MongoDB conectado correctamente");
+.connect(process.env.MONGO_URI)
+.then(() => {
 
-        const PORT = process.env.PORT || 3000;
+    console.log(
+        "✅ MongoDB conectado correctamente"
+    );
 
-        app.listen(PORT, () => {
-            console.log(
-                `🚀 Servidor funcionando en el puerto ${PORT}`
-            );
-        });
-    })
-    .catch((error) => {
-        console.error("❌ Error al conectar con MongoDB:");
-        console.error(error.message);
-    });
+})
+
+.catch((error) => {
+
+    console.error(
+        "❌ Error al conectar con MongoDB:"
+    );
+
+    console.error(
+        error.message
+    );
+
+});
+
