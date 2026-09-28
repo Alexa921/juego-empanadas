@@ -3,49 +3,97 @@
 // ================================
 
 let puntos = 0;
-let tiempo = 60;
+let tiempo = 70;
 
 let dinero = 0;
 let pedidosCorrectos = 0;
 
 let nivelTerminado = false;
 
-// Evita guardar la misma partida más de una vez
-let partidaGuardada = false;
 
-// Resultado real de la partida
+// ================================
+// ESTADO DEL GUARDADO
+// ================================
+
+let partidaGuardada = false;
+let guardandoPartida = false;
 let partidaSuperada = false;
 
-// Indica que todos los clientes ya fueron procesados
-// pero todavía falta recoger dinero.
-let esperandoDinero = false;
+
+// ================================
+// ESTADO DE LA EMPANADA QUE SE ESTÁ PREPARANDO
+// ================================
 
 let rellenoSeleccionado = null;
+
 let empanadaCerrada = false;
-let empanadaCocinando = false;
-let empanadaLista = false;
-let empanadaQuemada = false;
+
+
+// ================================
+// ESTADO DE LAS 2 PARRILLAS
+// ================================
+
+let parrilla1 = {
+    ocupada: false,
+    cocinando: false,
+    lista: false,
+    quemada: false,
+    relleno: null
+};
+
+let parrilla2 = {
+    ocupada: false,
+    cocinando: false,
+    lista: false,
+    quemada: false,
+    relleno: null
+};
+
+
+// ================================
+// EMPANADAS LISTAS PARA ENTREGAR
+// ================================
+
+let empanadasParaEntregar = [];
+
+
+// ================================
+// TEMPORIZADORES
+// ================================
 
 let temporizador;
-let temporizadorQuemado;
+
+let temporizadorPaciencia;
+
+let temporizadorCoccion1 = null;
+let temporizadorCoccion2 = null;
+
+let temporizadorQuemado1 = null;
+let temporizadorQuemado2 = null;
 
 
 // ================================
-// CONFIGURACIÓN DEL NIVEL
+// CONFIGURACIÓN DEL NIVEL 4
 // ================================
 
-const nivelActual = 1;
-
-const totalClientes = 6;
+const totalClientes = 13;
 
 const clientesVisibles = 3;
 
-const metaPedidos = 4;
+// 9 de 13 pedidos correctos para superar el nivel
+const metaPedidos = 9;
+
+
+// ================================
+// RELLENOS DISPONIBLES
+// ================================
 
 const pedidosDisponibles = [
     "carne",
     "pollo",
-    "queso"
+    "queso",
+    "pina",
+    "champinon"
 ];
 
 
@@ -54,9 +102,21 @@ const pedidosDisponibles = [
 // ================================
 
 const tiempoSerio = 10;
+
 const tiempoEnojado = 20;
+
 const tiempoMuyEnojado = 35;
+
 const tiempoSeVa = 55;
+
+
+// ================================
+// TIEMPOS DE COCCIÓN
+// ================================
+
+const tiempoCoccion = 5000;
+
+const tiempoParaQuemarse = 5000;
 
 
 // ================================
@@ -75,11 +135,19 @@ const mensajeHTML =
 const masa =
     document.getElementById("masa");
 
-const empanada =
-    document.getElementById("empanada");
+const empanada1 =
+    document.getElementById("empanada-1");
+
+const empanada2 =
+    document.getElementById("empanada-2");
 
 const empanadaFinal =
     document.getElementById("empanada-final");
+
+
+// ================================
+// BOTONES DE RELLENO
+// ================================
 
 const btnCarne =
     document.getElementById("btn-carne");
@@ -90,20 +158,91 @@ const btnPollo =
 const btnQueso =
     document.getElementById("btn-queso");
 
+const btnPina =
+    document.getElementById("btn-pina");
+
+const btnChampinon =
+    document.getElementById("btn-champinon");
+
+
+// ================================
+// HACER MÁS GRANDE EL CHAMPIÑÓN
+// DE LA MINI BURBUJA DE INGREDIENTE
+// ================================
+//
+// IMPORTANTE:
+// Solo aumenta visualmente la imagen.
+// NO aumenta el botón.
+// NO aumenta la burbuja.
+// NO cambia la zona de clic.
+//
+
+if (btnChampinon) {
+
+    const imagenChampinon =
+        btnChampinon.querySelector("img");
+
+    if (imagenChampinon) {
+
+        imagenChampinon.style.transform =
+            "scale(1.4)";
+
+        imagenChampinon.style.transformOrigin =
+            "center";
+
+        imagenChampinon.style.position =
+            "relative";
+
+        imagenChampinon.style.zIndex =
+            "2";
+    }
+}
+
+
+// ================================
+// PREPARACIÓN
+// ================================
+
 const btnCerrar =
     document.getElementById("btn-cerrar");
 
-const btnCocinar =
-    document.getElementById("btn-cocinar");
 
-const btnSacar =
-    document.getElementById("btn-sacar");
+// ================================
+// PARRILLA 1
+// ================================
+
+const btnCocinar1 =
+    document.getElementById("btn-cocinar-1");
+
+const btnSacar1 =
+    document.getElementById("btn-sacar-1");
+
+
+// ================================
+// PARRILLA 2
+// ================================
+
+const btnCocinar2 =
+    document.getElementById("btn-cocinar-2");
+
+const btnSacar2 =
+    document.getElementById("btn-sacar-2");
+
+
+// ================================
+// ENTREGA
+// ================================
 
 const btnEntregar =
     document.getElementById("btn-entregar");
 
 const btnTirar =
     document.getElementById("btn-tirar");
+
+
+// ================================
+// CLIENTES
+// ================================
 
 const clientesHTML =
     document.querySelectorAll(".cliente");
@@ -145,7 +284,7 @@ let dineroClientes = [];
 
 
 // ================================
-// PERSONAJE VISUAL DE CADA POSICIÓN
+// PERSONAJE VISUAL
 // ================================
 
 let personajeAnterior = [];
@@ -167,7 +306,7 @@ function generarPedido() {
 
 
 // ================================
-// GENERAR PEDIDOS INICIALES
+// GENERAR LOS 13 PEDIDOS
 // ================================
 
 function generarPedidosIniciales() {
@@ -310,7 +449,7 @@ function actualizarEstadoCliente(
 
 
 // ================================
-// REINICIAR ESTADO
+// REINICIAR ESTADO DEL CLIENTE
 // ================================
 
 function reiniciarEstadoCliente(
@@ -321,6 +460,26 @@ function reiniciarEstadoCliente(
         posicionVisual,
         "😊"
     );
+}
+
+
+// ================================
+// NOMBRE DEL RELLENO
+// ================================
+
+function obtenerNombreRelleno(
+    relleno
+) {
+
+    if (relleno === "pina") {
+        return "hawaiana";
+    }
+
+    if (relleno === "champinon") {
+        return "champiñones";
+    }
+
+    return relleno;
 }
 
 
@@ -357,22 +516,76 @@ function actualizarPedidoCliente(
             ".icono-pedido"
         );
 
+    const nombreRelleno =
+        obtenerNombreRelleno(
+            pedido
+        );
+
     if (textoPedido) {
 
         textoPedido.textContent =
             "Una empanada de " +
-            pedido;
+            nombreRelleno;
     }
 
     if (imagenPedido) {
 
-        imagenPedido.src =
-            "img/rellenos/" +
-            pedido +
-            ".png";
+        // ========================================
+        // REINICIAR TAMAÑO NORMAL
+        // ========================================
 
-        imagenPedido.alt =
-            pedido;
+        imagenPedido.style.width = "";
+        imagenPedido.style.height = "";
+        imagenPedido.style.objectFit = "";
+        imagenPedido.style.transform = "";
+        imagenPedido.style.transformOrigin = "";
+
+        if (pedido === "pina") {
+
+            imagenPedido.src =
+                "img/rellenos/piña.png";
+
+            imagenPedido.alt =
+                "Piña";
+
+        } else if (pedido === "champinon") {
+
+            imagenPedido.src =
+                "img/rellenos/champiñon.png";
+
+            imagenPedido.alt =
+                "Champiñón";
+
+            // ========================================
+            // CHAMPIÑÓN GRANDE
+            // SIN AGRANDAR LA BURBUJA
+            // ========================================
+
+            imagenPedido.style.width =
+                "45px";
+
+            imagenPedido.style.height =
+                "45px";
+
+            imagenPedido.style.objectFit =
+                "contain";
+
+            imagenPedido.style.transform =
+                "scale(1.35)";
+
+            imagenPedido.style.transformOrigin =
+                "center";
+
+        } else {
+
+            imagenPedido.src =
+                "img/rellenos/" +
+                pedido +
+                ".png";
+
+            imagenPedido.alt =
+                nombreRelleno;
+        }
     }
 
     reiniciarEstadoCliente(
@@ -383,6 +596,7 @@ function actualizarPedidoCliente(
 
 // ================================
 // CAMBIAR PERSONAJE VISUAL
+// NIVEL 4 - JAPÓN
 // ================================
 
 function cambiarPersonajeVisual(
@@ -398,7 +612,7 @@ function cambiarPersonajeVisual(
 
     const imagen =
         cliente.querySelector(
-            "img.cliente-img, img.personaje, img.avatar, img"
+            ".imagen-cliente"
         );
 
     if (!imagen) {
@@ -406,9 +620,9 @@ function cambiarPersonajeVisual(
     }
 
     const personajes = [
-        "cliente1-mex.png",
-        "cliente2-mex.png",
-        "cliente3-mex.png"
+        "cliente1-japon.png",
+        "cliente2-japon.png",
+        "cliente3-japon.png"
     ];
 
     let personajeNuevo;
@@ -455,7 +669,6 @@ function prepararClientes() {
     dineroClientes = [];
 
     personajeAnterior = [];
-
 
     for (
         let i = 0;
@@ -524,6 +737,42 @@ function prepararClientes() {
 
 
     // ================================
+    // ASEGURAR PERSONAJES DE JAPÓN
+    // ================================
+
+    for (
+        let i = 0;
+        i < clientesVisibles;
+        i++
+    ) {
+
+        const cliente =
+            clientesHTML[i];
+
+        if (!cliente) {
+            continue;
+        }
+
+        const imagen =
+            cliente.querySelector(
+                ".imagen-cliente"
+            );
+
+        if (!imagen) {
+            continue;
+        }
+
+        imagen.src =
+            "img/clientes/" +
+            [
+                "cliente1-japon.png",
+                "cliente2-japon.png",
+                "cliente3-japon.png"
+            ][i];
+    }
+
+
+    // ================================
     // OCULTAR SOBRANTES
     // ================================
 
@@ -546,20 +795,44 @@ function prepararClientes() {
 masa.style.display =
     "flex";
 
-empanada.style.display =
+empanada1.style.display =
+    "none";
+
+empanada2.style.display =
     "none";
 
 empanadaFinal.style.display =
     "none";
 
 
+// ================================
+// ASEGURAR QUE LA MASA SEA EL FONDO
+// ================================
+
+masa.style.position =
+    "relative";
+
+masa.style.zIndex =
+    "1";
+
+
+// ================================
+// BOTONES INICIALES
+// ================================
+
 btnCerrar.disabled =
     true;
 
-btnCocinar.disabled =
+btnCocinar1.disabled =
     true;
 
-btnSacar.disabled =
+btnSacar1.disabled =
+    true;
+
+btnCocinar2.disabled =
+    true;
+
+btnSacar2.disabled =
     true;
 
 btnEntregar.disabled =
@@ -582,7 +855,7 @@ mostrarMensaje(
 
 
 // ================================
-// MOSTRAR PROTEÍNA SOBRE LA MASA
+// MOSTRAR RELLENO SOBRE LA MASA
 // ================================
 
 function mostrarProteinaSobreMasa(
@@ -598,6 +871,17 @@ function mostrarProteinaSobreMasa(
         anterior.remove();
     }
 
+
+    masa.style.display =
+        "flex";
+
+    masa.style.position =
+        "relative";
+
+    masa.style.zIndex =
+        "1";
+
+
     const proteina =
         document.createElement(
             "img"
@@ -607,34 +891,43 @@ function mostrarProteinaSobreMasa(
         "proteina-sobre-masa"
     );
 
-    if (
-        relleno === "carne"
-    ) {
+
+    // ================================
+    // IMAGEN DEL RELLENO
+    // ================================
+
+    if (relleno === "carne") {
 
         proteina.src =
             "img/rellenos/carne-cocinada.png";
 
-    }
-
-    else if (
-        relleno === "pollo"
-    ) {
+    } else if (relleno === "pollo") {
 
         proteina.src =
             "img/rellenos/pollo-cocinado.png";
 
-    }
-
-    else if (
-        relleno === "queso"
-    ) {
+    } else if (relleno === "queso") {
 
         proteina.src =
             "img/rellenos/queso-rallado.png";
+
+    } else if (relleno === "pina") {
+
+        proteina.src =
+            "img/rellenos/hawaiana.png";
+
+    } else if (relleno === "champinon") {
+
+        proteina.src =
+            "img/rellenos/relleno-champiñon.png";
     }
 
+
     proteina.alt =
-        relleno;
+        obtenerNombreRelleno(
+            relleno
+        );
+
 
     const contenedor =
         masa.parentElement;
@@ -642,11 +935,12 @@ function mostrarProteinaSobreMasa(
     contenedor.style.position =
         "relative";
 
+
     proteina.style.position =
         "absolute";
 
     proteina.style.zIndex =
-        "20";
+        "10";
 
     proteina.style.pointerEvents =
         "none";
@@ -666,6 +960,7 @@ function mostrarProteinaSobreMasa(
     proteina.style.transform =
         "translate(-50%, -50%)";
 
+
     contenedor.appendChild(
         proteina
     );
@@ -684,9 +979,6 @@ function seleccionarRelleno(
         return;
     }
 
-    if (esperandoDinero) {
-        return;
-    }
 
     if (empanadaCerrada) {
 
@@ -697,19 +989,27 @@ function seleccionarRelleno(
         return;
     }
 
+
     rellenoSeleccionado =
         relleno;
+
+
+    masa.style.display =
+        "flex";
+
 
     mostrarProteinaSobreMasa(
         relleno
     );
 
+
     btnCerrar.disabled =
         false;
 
+
     mostrarMensaje(
         "Elegiste relleno de " +
-        relleno +
+        obtenerNombreRelleno(relleno) +
         ". Ahora cierra la empanada."
     );
 }
@@ -729,7 +1029,6 @@ btnCarne.addEventListener(
     }
 );
 
-
 btnPollo.addEventListener(
     "click",
     function () {
@@ -739,7 +1038,6 @@ btnPollo.addEventListener(
         );
     }
 );
-
 
 btnQueso.addEventListener(
     "click",
@@ -751,6 +1049,44 @@ btnQueso.addEventListener(
     }
 );
 
+btnPina.addEventListener(
+    "click",
+    function () {
+
+        seleccionarRelleno(
+            "pina"
+        );
+    }
+);
+
+btnChampinon.addEventListener(
+    "click",
+    function () {
+
+        seleccionarRelleno(
+            "champinon"
+        );
+    }
+);
+
+
+// ================================
+// BUSCAR PARRILLA LIBRE
+// ================================
+
+function obtenerParrillaLibre() {
+
+    if (!parrilla1.ocupada) {
+        return 1;
+    }
+
+    if (!parrilla2.ocupada) {
+        return 2;
+    }
+
+    return null;
+}
+
 
 // ================================
 // CERRAR EMPANADA
@@ -760,9 +1096,10 @@ btnCerrar.addEventListener(
     "click",
     function () {
 
-        if (nivelTerminado || esperandoDinero) {
+        if (nivelTerminado) {
             return;
         }
+
 
         if (!rellenoSeleccionado) {
 
@@ -773,6 +1110,21 @@ btnCerrar.addEventListener(
             return;
         }
 
+
+        const parrillaLibre =
+            obtenerParrillaLibre();
+
+
+        if (parrillaLibre === null) {
+
+            mostrarMensaje(
+                "🔥 Las dos parrillas están ocupadas. Espera a que una quede libre."
+            );
+
+            return;
+        }
+
+
         const proteina =
             document.querySelector(
                 ".proteina-sobre-masa"
@@ -782,384 +1134,841 @@ btnCerrar.addEventListener(
             proteina.remove();
         }
 
+
         empanadaCerrada =
             true;
 
-        empanadaCocinando =
-            false;
-
-        empanadaLista =
-            false;
-
-        empanadaQuemada =
-            false;
 
         masa.style.display =
             "none";
 
-        empanada.src =
-            "img/empanada/empanada-cerrada.png";
-
-        empanada.style.display =
-            "block";
 
         btnCerrar.disabled =
             true;
 
-        btnCocinar.disabled =
-            false;
 
-        btnSacar.disabled =
-            true;
+        colocarEmpanadaEnParrilla(
+            parrillaLibre
+        );
 
-        btnEntregar.disabled =
-            true;
-
-        btnTirar.disabled =
-            true;
 
         mostrarMensaje(
-            "¡Empanada cerrada! Ahora cocínala."
+            "🥟 ¡Empanada cerrada! Está en la Parrilla " +
+            parrillaLibre +
+            ". Pulsa COCINAR cuando quieras."
         );
     }
 );
 
 
 // ================================
-// COCINAR
+// COLOCAR EMPANADA EN PARRILLA
 // ================================
 
-btnCocinar.addEventListener(
+function colocarEmpanadaEnParrilla(
+    numeroParrilla
+) {
+
+    let parrilla;
+
+    let imagenEmpanada;
+
+
+    if (numeroParrilla === 1) {
+
+        parrilla =
+            parrilla1;
+
+        imagenEmpanada =
+            empanada1;
+
+    } else {
+
+        parrilla =
+            parrilla2;
+
+        imagenEmpanada =
+            empanada2;
+    }
+
+
+    if (parrilla.ocupada) {
+
+        mostrarMensaje(
+            "Esta parrilla ya está ocupada."
+        );
+
+        return;
+    }
+
+
+    parrilla.ocupada =
+        true;
+
+    parrilla.cocinando =
+        false;
+
+    parrilla.lista =
+        false;
+
+    parrilla.quemada =
+        false;
+
+    parrilla.relleno =
+        rellenoSeleccionado;
+
+
+    // ================================
+    // IMAGEN INICIAL:
+    // EMPANADA CERRADA
+    // ================================
+
+    imagenEmpanada.src =
+        "img/empanada/empanada-cerrada.png";
+
+    imagenEmpanada.style.display =
+        "block";
+
+
+    empanadaCerrada =
+        false;
+
+    rellenoSeleccionado =
+        null;
+
+
+    actualizarParrillas();
+}
+
+
+// ================================
+// COCINAR EN PARRILLA 1
+// ================================
+
+btnCocinar1.addEventListener(
     "click",
     function () {
 
-        if (nivelTerminado || esperandoDinero) {
-            return;
-        }
-
-        if (!empanadaCerrada) {
-
-            mostrarMensaje(
-                "Primero debes cerrar la empanada."
-            );
-
-            return;
-        }
-
-        if (empanadaCocinando) {
-
-            mostrarMensaje(
-                "La empanada ya se está cocinando..."
-            );
-
-            return;
-        }
-
-        if (empanadaLista) {
-
-            mostrarMensaje(
-                "La empanada ya está lista. ¡Sácala antes de que se queme!"
-            );
-
-            return;
-        }
-
-        if (empanadaQuemada) {
-
-            mostrarMensaje(
-                "🔥 Esta empanada está quemada. Sácala y prepara otra."
-            );
-
-            return;
-        }
+        cocinarEnParrilla(1);
+    }
+);
 
 
-        empanadaCocinando =
-            true;
+// ================================
+// COCINAR EN PARRILLA 2
+// ================================
 
-        empanadaLista =
-            false;
+btnCocinar2.addEventListener(
+    "click",
+    function () {
 
-        empanadaQuemada =
-            false;
+        cocinarEnParrilla(2);
+    }
+);
 
 
-        btnCocinar.disabled =
-            true;
+// ================================
+// FUNCIÓN COCINAR
+// ================================
 
-        btnSacar.disabled =
-            true;
+function cocinarEnParrilla(
+    numeroParrilla
+) {
 
-        btnEntregar.disabled =
-            true;
+    if (nivelTerminado) {
+        return;
+    }
 
-        btnTirar.disabled =
-            true;
 
+    let parrilla;
+
+    let imagenEmpanada;
+
+    let botonCocinar;
+
+    let botonSacar;
+
+
+    if (numeroParrilla === 1) {
+
+        parrilla =
+            parrilla1;
+
+        imagenEmpanada =
+            empanada1;
+
+        botonCocinar =
+            btnCocinar1;
+
+        botonSacar =
+            btnSacar1;
+
+    } else {
+
+        parrilla =
+            parrilla2;
+
+        imagenEmpanada =
+            empanada2;
+
+        botonCocinar =
+            btnCocinar2;
+
+        botonSacar =
+            btnSacar2;
+    }
+
+
+    if (!parrilla.ocupada) {
 
         mostrarMensaje(
-            "🍳 Cocinando empanada..."
+            "No hay ninguna empanada en esta parrilla."
         );
 
+        return;
+    }
 
-        empanada.src =
-            "img/empanada/empanada-cerrada.png";
+
+    if (parrilla.cocinando) {
+
+        mostrarMensaje(
+            "🔥 Esta empanada ya se está cocinando."
+        );
+
+        return;
+    }
 
 
-        // ================================
-        // TERMINAR COCCIÓN
-        // ================================
+    if (parrilla.lista) {
 
+        mostrarMensaje(
+            "🥟 Esta empanada ya está lista."
+        );
+
+        return;
+    }
+
+
+    if (parrilla.quemada) {
+
+        mostrarMensaje(
+            "🔥 Esta empanada se quemó. Sácala de la parrilla."
+        );
+
+        return;
+    }
+
+
+    parrilla.cocinando =
+        true;
+
+    parrilla.lista =
+        false;
+
+    parrilla.quemada =
+        false;
+
+
+    botonCocinar.disabled =
+        true;
+
+    botonSacar.disabled =
+        true;
+
+
+    // ========================================
+    // LA EMPANADA PERMANECE CERRADA
+    // MIENTRAS SE ESTÁ COCINANDO
+    // ========================================
+
+    imagenEmpanada.src =
+        "img/empanada/empanada-cerrada.png";
+
+    imagenEmpanada.style.display =
+        "block";
+
+
+    mostrarMensaje(
+        "🍳 Cocinando en la Parrilla " +
+        numeroParrilla +
+        "..."
+    );
+
+
+    actualizarParrillas();
+
+
+    if (numeroParrilla === 1) {
+
+        clearTimeout(
+            temporizadorCoccion1
+        );
+
+        clearTimeout(
+            temporizadorQuemado1
+        );
+
+    } else {
+
+        clearTimeout(
+            temporizadorCoccion2
+        );
+
+        clearTimeout(
+            temporizadorQuemado2
+        );
+    }
+
+
+    const temporizadorDorado =
         setTimeout(
             function () {
 
-                if (nivelTerminado || esperandoDinero) {
-                    return;
-                }
-
-                if (!empanadaCerrada) {
-                    return;
-                }
-
-                if (!empanadaCocinando) {
+                if (nivelTerminado) {
                     return;
                 }
 
 
-                empanada.src =
+                if (!parrilla.ocupada) {
+                    return;
+                }
+
+
+                if (!parrilla.cocinando) {
+                    return;
+                }
+
+
+                parrilla.cocinando =
+                    false;
+
+                parrilla.lista =
+                    true;
+
+                parrilla.quemada =
+                    false;
+
+
+                // ========================================
+                // IMAGEN FINAL:
+                // EMPANADA DORADA
+                // ========================================
+                // Todos los rellenos utilizan la misma
+                // imagen dorada cuando están listas.
+
+                imagenEmpanada.src =
                     "img/empanada/empanada-dorada.png";
 
-                empanadaCocinando =
+                imagenEmpanada.style.display =
+                    "block";
+
+
+                botonSacar.disabled =
                     false;
-
-                empanadaLista =
-                    true;
-
-                empanadaQuemada =
-                    false;
-
-
-                btnCocinar.disabled =
-                    true;
-
-                btnSacar.disabled =
-                    false;
-
-                btnEntregar.disabled =
-                    true;
-
-                btnTirar.disabled =
-                    true;
 
 
                 mostrarMensaje(
-                    "🟡 ¡La empanada está lista! Sácala antes de que se queme."
+                    "🥟 ¡La empanada de " +
+                    obtenerNombreRelleno(
+                        parrilla.relleno
+                    ) +
+                    " está lista en la Parrilla " +
+                    numeroParrilla +
+                    "! Sácala antes de que se queme."
                 );
 
 
-                // ================================
-                // TIEMPO PARA QUE SE QUEME
-                // ================================
+                actualizarParrillas();
 
-                temporizadorQuemado =
+
+                const temporizadorQuemado =
                     setTimeout(
                         function () {
 
-                            if (
-                                nivelTerminado ||
-                                esperandoDinero
-                            ) {
-                                return;
-                            }
-
-                            if (!empanadaCerrada) {
-                                return;
-                            }
-
-                            if (!empanadaLista) {
+                            if (nivelTerminado) {
                                 return;
                             }
 
 
-                            empanada.src =
+                            if (!parrilla.ocupada) {
+                                return;
+                            }
+
+
+                            if (!parrilla.lista) {
+                                return;
+                            }
+
+
+                            parrilla.lista =
+                                false;
+
+                            parrilla.cocinando =
+                                false;
+
+                            parrilla.quemada =
+                                true;
+
+
+                            // ========================================
+                            // IMAGEN QUEMADA
+                            // ========================================
+
+                            imagenEmpanada.src =
                                 "img/empanada/empanada-quemada.png";
 
 
-                            empanadaCocinando =
+                            imagenEmpanada.style.display =
+                                "block";
+
+
+                            botonSacar.disabled =
                                 false;
-
-                            empanadaLista =
-                                false;
-
-                            empanadaQuemada =
-                                true;
-
-
-                            btnCocinar.disabled =
-                                true;
-
-                            btnSacar.disabled =
-                                false;
-
-                            btnEntregar.disabled =
-                                true;
-
-                            btnTirar.disabled =
-                                true;
 
 
                             mostrarMensaje(
-                                "🔥 ¡Se quemó la empanada! Sácala y prepara otra."
+                                "🔥 ¡La empanada de " +
+                                obtenerNombreRelleno(
+                                    parrilla.relleno
+                                ) +
+                                " se quemó! Sácala y prepara otra."
                             );
 
+
+                            actualizarParrillas();
+
                         },
-                        4000
+                        tiempoParaQuemarse
                     );
 
+
+                if (numeroParrilla === 1) {
+
+                    temporizadorQuemado1 =
+                        temporizadorQuemado;
+
+                } else {
+
+                    temporizadorQuemado2 =
+                        temporizadorQuemado;
+                }
+
             },
-            5000
+            tiempoCoccion
         );
+
+
+    if (numeroParrilla === 1) {
+
+        temporizadorCoccion1 =
+            temporizadorDorado;
+
+    } else {
+
+        temporizadorCoccion2 =
+            temporizadorDorado;
+    }
+}
+
+
+// ================================
+// SACAR DE PARRILLA 1
+// ================================
+
+btnSacar1.addEventListener(
+    "click",
+    function () {
+
+        sacarDeParrilla(1);
     }
 );
 
 
 // ================================
-// SACAR EMPANADA
+// SACAR DE PARRILLA 2
 // ================================
 
-btnSacar.addEventListener(
+btnSacar2.addEventListener(
     "click",
     function () {
 
-        if (nivelTerminado || esperandoDinero) {
+        sacarDeParrilla(2);
+    }
+);
+
+
+// ================================
+// FUNCIÓN SACAR EMPANADA
+// ================================
+
+function sacarDeParrilla(
+    numeroParrilla
+) {
+
+    if (nivelTerminado) {
+        return;
+    }
+
+
+    let parrilla;
+
+    let imagenEmpanada;
+
+    let botonSacar;
+
+
+    if (numeroParrilla === 1) {
+
+        parrilla =
+            parrilla1;
+
+        imagenEmpanada =
+            empanada1;
+
+        botonSacar =
+            btnSacar1;
+
+    } else {
+
+        parrilla =
+            parrilla2;
+
+        imagenEmpanada =
+            empanada2;
+
+        botonSacar =
+            btnSacar2;
+    }
+
+
+    // ================================
+    // SI ESTÁ QUEMADA
+    // ================================
+
+    if (parrilla.quemada) {
+
+        if (numeroParrilla === 1) {
+
+            clearTimeout(
+                temporizadorCoccion1
+            );
+
+            clearTimeout(
+                temporizadorQuemado1
+            );
+
+            temporizadorCoccion1 =
+                null;
+
+            temporizadorQuemado1 =
+                null;
+
+        } else {
+
+            clearTimeout(
+                temporizadorCoccion2
+            );
+
+            clearTimeout(
+                temporizadorQuemado2
+            );
+
+            temporizadorCoccion2 =
+                null;
+
+            temporizadorQuemado2 =
+                null;
+        }
+
+
+        imagenEmpanada.style.display =
+            "none";
+
+        botonSacar.disabled =
+            true;
+
+
+        parrilla.ocupada =
+            false;
+
+        parrilla.cocinando =
+            false;
+
+        parrilla.lista =
+            false;
+
+        parrilla.quemada =
+            false;
+
+        parrilla.relleno =
+            null;
+
+
+        actualizarParrillas();
+
+
+        masa.style.display =
+            "flex";
+
+        btnCerrar.disabled =
+            true;
+
+
+        mostrarMensaje(
+            "🔥 ¡Empanada quemada! Sácala y prepara otra."
+        );
+
+
+        return;
+    }
+
+
+    // ================================
+    // COMPROBAR SI ESTÁ LISTA
+    // ================================
+
+    if (!parrilla.lista) {
+
+        mostrarMensaje(
+            "La empanada todavía no está lista."
+        );
+
+        return;
+    }
+
+
+    // ================================
+    // CANCELAR TEMPORIZADORES
+    // ================================
+
+    if (numeroParrilla === 1) {
+
+        clearTimeout(
+            temporizadorCoccion1
+        );
+
+        clearTimeout(
+            temporizadorQuemado1
+        );
+
+        temporizadorCoccion1 =
+            null;
+
+        temporizadorQuemado1 =
+            null;
+
+    } else {
+
+        clearTimeout(
+            temporizadorCoccion2
+        );
+
+        clearTimeout(
+            temporizadorQuemado2
+        );
+
+        temporizadorCoccion2 =
+            null;
+
+        temporizadorQuemado2 =
+            null;
+    }
+
+
+    // ================================
+    // GUARDAR EN COLA DE ENTREGA
+    // ================================
+
+    empanadasParaEntregar.push({
+        relleno: parrilla.relleno,
+        parrilla: numeroParrilla
+    });
+
+
+    imagenEmpanada.style.display =
+        "none";
+
+    botonSacar.disabled =
+        true;
+
+
+    parrilla.ocupada =
+        false;
+
+    parrilla.cocinando =
+        false;
+
+    parrilla.lista =
+        false;
+
+    parrilla.quemada =
+        false;
+
+    parrilla.relleno =
+        null;
+
+
+    actualizarEntrega();
+
+    actualizarParrillas();
+
+
+    mostrarMensaje(
+        "🥟 ¡Empanada sacada de la Parrilla " +
+        numeroParrilla +
+        "! Ya puedes entregarla."
+    );
+}
+
+
+// ================================
+// ACTUALIZAR ENTREGA
+// ================================
+
+function actualizarEntrega() {
+
+    if (
+        empanadasParaEntregar.length === 0
+    ) {
+
+        empanadaFinal.style.display =
+            "none";
+
+        btnEntregar.disabled =
+            true;
+
+        btnTirar.disabled =
+            true;
+
+        return;
+    }
+
+
+    const primeraEmpanada =
+        empanadasParaEntregar[0];
+
+
+    // ================================
+    // MOSTRAR EMPANADA DORADA
+    // ================================
+    // Todas las empanadas listas para
+    // entregar utilizan la imagen dorada.
+
+    empanadaFinal.src =
+        "img/empanada/empanada-dorada.png";
+
+
+    empanadaFinal.style.display =
+        "block";
+
+
+    btnEntregar.disabled =
+        false;
+
+    btnTirar.disabled =
+        false;
+}
+
+
+// ================================
+// TIRAR EMPANADA
+// ================================
+
+btnTirar.addEventListener(
+    "click",
+    function () {
+
+        if (nivelTerminado) {
             return;
         }
 
 
-        // ================================
-        // EMPANADA QUEMADA
-        // ================================
+        if (
+            empanadasParaEntregar.length === 0
+        ) {
 
-        if (empanadaQuemada) {
-
-            if (temporizadorQuemado) {
-
-                clearTimeout(
-                    temporizadorQuemado
-                );
-
-                temporizadorQuemado =
-                    null;
-            }
-
-
-            empanada.style.display =
-                "none";
-
-            empanadaFinal.style.display =
-                "none";
-
-
-            empanadaCerrada =
-                false;
-
-            empanadaCocinando =
-                false;
-
-            empanadaLista =
-                false;
-
-            empanadaQuemada =
-                false;
-
-            rellenoSeleccionado =
-                null;
-
-
-            masa.style.display =
-                "flex";
-
-
-            btnCerrar.disabled =
-                true;
-
-            btnCocinar.disabled =
-                true;
-
-            btnSacar.disabled =
-                true;
-
-            btnEntregar.disabled =
-                true;
+            mostrarMensaje(
+                "No tienes una empanada para tirar."
+            );
 
             btnTirar.disabled =
                 true;
 
-
-            mostrarMensaje(
-                "🔥 Empanada quemada retirada. Prepara una nueva."
-            );
-
             return;
         }
 
 
-        // ================================
-        // EMPANADA TODAVÍA NO LISTA
-        // ================================
-
-        if (!empanadaLista) {
-
-            mostrarMensaje(
-                "La empanada todavía no está lista."
-            );
-
-            return;
-        }
+        const empanadaTirada =
+            empanadasParaEntregar.shift();
 
 
-        // ================================
-        // CANCELAR QUEMADO
-        // ================================
-
-        if (temporizadorQuemado) {
-
-            clearTimeout(
-                temporizadorQuemado
-            );
-
-            temporizadorQuemado =
-                null;
-        }
-
-
-        empanada.style.display =
-            "none";
-
-        empanadaFinal.src =
-            "img/empanada/empanada-dorada.png";
-
-        empanadaFinal.style.display =
-            "block";
-
-
-        btnSacar.disabled =
-            true;
-
-        btnEntregar.disabled =
-            false;
-
-        btnTirar.disabled =
-            false;
+        actualizarEntrega();
 
 
         mostrarMensaje(
-            "¡Lista! El juego buscará automáticamente al cliente que pidió " +
-            rellenoSeleccionado +
-            "."
+            "🗑️ Tiraste la empanada de " +
+            obtenerNombreRelleno(
+                empanadaTirada.relleno
+            ) +
+            ". Prepara otra."
         );
     }
 );
+
+
+// ================================
+// ACTUALIZAR PARRILLAS
+// ================================
+
+function actualizarParrillas() {
+
+    if (nivelTerminado) {
+        return;
+    }
+
+
+    if (
+        parrilla1.ocupada &&
+        !parrilla1.cocinando &&
+        !parrilla1.lista &&
+        !parrilla1.quemada
+    ) {
+
+        btnCocinar1.disabled =
+            false;
+
+    } else {
+
+        btnCocinar1.disabled =
+            true;
+    }
+
+
+    if (
+        parrilla2.ocupada &&
+        !parrilla2.cocinando &&
+        !parrilla2.lista &&
+        !parrilla2.quemada
+    ) {
+
+        btnCocinar2.disabled =
+            false;
+
+    } else {
+
+        btnCocinar2.disabled =
+            true;
+    }
+
+
+    btnSacar1.disabled =
+        !parrilla1.lista &&
+        !parrilla1.quemada;
+
+    btnSacar2.disabled =
+        !parrilla2.lista &&
+        !parrilla2.quemada;
+}
 
 
 // ================================
@@ -1176,6 +1985,7 @@ function buscarClientePorPedido(
     let mejorPosicion =
         -1;
 
+
     for (
         let posicion = 0;
         posicion < clientesVisibles;
@@ -1183,45 +1993,60 @@ function buscarClientePorPedido(
     ) {
 
         const numeroCliente =
-            clientesEnPantalla[posicion];
+            clientesEnPantalla[
+                posicion
+            ];
+
 
         if (
             numeroCliente ===
             undefined
         ) {
+
             continue;
         }
+
 
         if (
             clientesSeFueron[
                 numeroCliente
             ]
         ) {
+
             continue;
         }
 
+
         const cliente =
-            clientesHTML[posicion];
+            clientesHTML[
+                posicion
+            ];
+
 
         if (!cliente) {
             continue;
         }
+
 
         if (
             cliente.classList.contains(
                 "atendido"
             )
         ) {
+
             continue;
         }
+
 
         if (
             pedidosClientes[
                 numeroCliente
             ] !== relleno
         ) {
+
             continue;
         }
+
 
         if (
             mejorCliente === null ||
@@ -1236,12 +2061,14 @@ function buscarClientePorPedido(
         }
     }
 
+
     if (
         mejorCliente === null
     ) {
 
         return null;
     }
+
 
     return {
 
@@ -1262,22 +2089,14 @@ btnEntregar.addEventListener(
     "click",
     function () {
 
-        if (nivelTerminado || esperandoDinero) {
+        if (nivelTerminado) {
             return;
         }
 
 
-        if (empanadaQuemada) {
-
-            mostrarMensaje(
-                "🔥 No puedes entregar una empanada quemada."
-            );
-
-            return;
-        }
-
-
-        if (!empanadaLista) {
+        if (
+            empanadasParaEntregar.length === 0
+        ) {
 
             mostrarMensaje(
                 "No tienes una empanada lista."
@@ -1287,17 +2106,26 @@ btnEntregar.addEventListener(
         }
 
 
+        const empanada =
+            empanadasParaEntregar[0];
+
+
+        const relleno =
+            empanada.relleno;
+
+
         const clienteEncontrado =
             buscarClientePorPedido(
-                rellenoSeleccionado
+                relleno
             );
+
 
         if (!clienteEncontrado) {
 
             mostrarMensaje(
                 "🤔 Ningún cliente está esperando una empanada de " +
-                rellenoSeleccionado +
-                "."
+                obtenerNombreRelleno(relleno) +
+                ". Puedes tirarla con el botón TIRAR."
             );
 
             return;
@@ -1311,20 +2139,13 @@ btnEntregar.addEventListener(
             clienteEncontrado.posicionVisual;
 
 
-        // ================================
-        // PEDIDO CORRECTO
-        // ================================
-
         puntos += 100;
 
         pedidosCorrectos++;
 
+
         actualizarPuntos();
 
-
-        // ================================
-        // CREAR DINERO
-        // ================================
 
         crearDinero(
             posicionVisual,
@@ -1332,109 +2153,79 @@ btnEntregar.addEventListener(
         );
 
 
-        // ================================
-        // MARCAR CLIENTE ATENDIDO
-        // ================================
-
         marcarClienteAtendido(
             posicionVisual
         );
 
 
         mostrarMensaje(
-            "🎉 ¡Pedido entregado! El cliente dejó $100. Recoge el dinero."
+            "🎉 ¡Pedido entregado! El cliente dejó $100."
         );
 
 
-        // ================================
-        // REINICIAR EMPANADA
-        // ================================
-
-        reiniciarEmpanada();
+        empanadasParaEntregar.shift();
 
 
-        // ================================
-        // REEMPLAZAR CLIENTE
-        // ================================
+        actualizarEntrega();
+
 
         reemplazarClienteAtendido(
             posicionVisual,
             numeroCliente
         );
-    }
-);
 
 
-// ================================
-// TIRAR EMPANADA
-// ================================
+        const clientesProcesados =
+            pedidosCorrectos +
+            clientesSeFueron.filter(
+                estado => estado
+            ).length;
 
-btnTirar.addEventListener(
-    "click",
-    function () {
-
-        if (nivelTerminado || esperandoDinero) {
-            return;
-        }
 
         if (
-            !empanadaFinal ||
-            empanadaFinal.style.display === "none"
+            clientesProcesados >=
+            totalClientes
         ) {
 
-            mostrarMensaje(
-                "No tienes una empanada para tirar."
-            );
-
-            return;
+            comprobarFinDelNivel();
         }
-
-
-        empanadaFinal.style.display =
-            "none";
-
-
-        rellenoSeleccionado =
-            null;
-
-        empanadaCerrada =
-            false;
-
-        empanadaCocinando =
-            false;
-
-        empanadaLista =
-            false;
-
-        empanadaQuemada =
-            false;
-
-
-        masa.style.display =
-            "flex";
-
-
-        btnEntregar.disabled =
-            true;
-
-        btnTirar.disabled =
-            true;
-
-        btnCerrar.disabled =
-            true;
-
-        btnCocinar.disabled =
-            true;
-
-        btnSacar.disabled =
-            true;
-
-
-        mostrarMensaje(
-            "🗑️ Empanada tirada. Prepara una nueva."
-        );
     }
 );
+
+
+// ================================
+// REINICIAR EMPANADA
+// ================================
+
+function reiniciarEmpanada() {
+
+    rellenoSeleccionado =
+        null;
+
+    empanadaCerrada =
+        false;
+
+
+    const proteina =
+        document.querySelector(
+            ".proteina-sobre-masa"
+        );
+
+    if (proteina) {
+        proteina.remove();
+    }
+
+
+    masa.style.display =
+        "flex";
+
+
+    btnCerrar.disabled =
+        true;
+
+
+    actualizarParrillas();
+}
 
 
 // ================================
@@ -1453,8 +2244,10 @@ function reemplazarClienteAtendido(
         return;
     }
 
+
     let siguiente =
         -1;
+
 
     for (
         let i = 0;
@@ -1465,20 +2258,27 @@ function reemplazarClienteAtendido(
         if (
             clientesEnPantalla.includes(i)
         ) {
+
             continue;
         }
+
 
         if (
             clientesSeFueron[i]
         ) {
+
             continue;
         }
 
+
         if (
-            i === numeroClienteAtendido
+            i ===
+            numeroClienteAtendido
         ) {
+
             continue;
         }
+
 
         siguiente =
             i;
@@ -1488,15 +2288,19 @@ function reemplazarClienteAtendido(
 
 
     if (
-        siguiente === -1
+        siguiente ===
+        -1
     ) {
 
         cliente.style.opacity =
             "0";
 
+
         clientesEnPantalla[
             posicionVisual
-        ] = undefined;
+        ] =
+            undefined;
+
 
         comprobarFinDelNivel();
 
@@ -1506,6 +2310,7 @@ function reemplazarClienteAtendido(
 
     cliente.style.opacity =
         "0";
+
 
     cliente.style.transform =
         "translateY(-20px)";
@@ -1518,19 +2323,23 @@ function reemplazarClienteAtendido(
                 return;
             }
 
+
             clientesEnPantalla[
                 posicionVisual
             ] =
                 siguiente;
+
 
             tiempoLlegadaClientes[
                 posicionVisual
             ] =
                 Date.now();
 
+
             dineroClientes[
                 siguiente
-            ] = false;
+            ] =
+                false;
 
 
             cambiarPersonajeVisual(
@@ -1554,6 +2363,7 @@ function reemplazarClienteAtendido(
                     ".chulo-cliente"
                 );
 
+
             if (chulo) {
                 chulo.remove();
             }
@@ -1562,15 +2372,18 @@ function reemplazarClienteAtendido(
             cliente.style.transform =
                 "translateY(0)";
 
+
             cliente.style.opacity =
                 "1";
 
 
             mostrarMensaje(
                 "👤 Llegó otro cliente: empanada de " +
-                pedidosClientes[
-                    siguiente
-                ]
+                obtenerNombreRelleno(
+                    pedidosClientes[
+                        siguiente
+                    ]
+                )
             );
 
         },
@@ -1594,9 +2407,11 @@ function marcarClienteAtendido(
         return;
     }
 
+
     cliente.classList.add(
         "atendido"
     );
+
 
     actualizarEstadoCliente(
         posicionVisual,
@@ -1609,12 +2424,15 @@ function marcarClienteAtendido(
             "div"
         );
 
+
     chulo.classList.add(
         "chulo-cliente"
     );
 
+
     chulo.textContent =
         "✓";
+
 
     cliente.appendChild(
         chulo
@@ -1641,14 +2459,15 @@ function crearDinero(
             ".mostrador-cocina"
         );
 
-    if (!cliente || !mostrador) {
+
+    if (
+        !cliente ||
+        !mostrador
+    ) {
+
         return;
     }
 
-
-    // ================================
-    // EVITAR DUPLICAR DINERO
-    // ================================
 
     if (
         dineroClientes[
@@ -1659,10 +2478,6 @@ function crearDinero(
         return;
     }
 
-
-    // ================================
-    // CREAR EL BILLETE
-    // ================================
 
     const dineroHTML =
         document.createElement(
@@ -1692,10 +2507,6 @@ function crearDinero(
         numeroCliente;
 
 
-    // ================================
-    // POSICIÓN DEL BILLETE
-    // ================================
-
     const rectCliente =
         cliente.getBoundingClientRect();
 
@@ -1717,18 +2528,14 @@ function crearDinero(
         160;
 
 
-    // ================================
-    // LÍMITES DEL MOSTRADOR
-    // ================================
+    const anchoBillete =
+        70;
 
-    const anchoBillete = 70;
-
-    const altoBillete = 50;
-
+    const altoBillete =
+        35;
 
     const anchoMesa =
         mostrador.clientWidth;
-
 
     const altoMesa =
         mostrador.clientHeight;
@@ -1738,7 +2545,8 @@ function crearDinero(
         posicionX < 5
     ) {
 
-        posicionX = 5;
+        posicionX =
+            5;
     }
 
 
@@ -1760,7 +2568,8 @@ function crearDinero(
         posicionY < 5
     ) {
 
-        posicionY = 5;
+        posicionY =
+            5;
     }
 
 
@@ -1779,11 +2588,13 @@ function crearDinero(
 
 
     dineroHTML.style.left =
-        posicionX + "px";
+        posicionX +
+        "px";
 
 
     dineroHTML.style.top =
-        posicionY + "px";
+        posicionY +
+        "px";
 
 
     dineroHTML.style.position =
@@ -1802,10 +2613,6 @@ function crearDinero(
         "auto";
 
 
-    // ================================
-    // RECOGER DINERO
-    // ================================
-
     dineroHTML.addEventListener(
         "click",
         function () {
@@ -1823,7 +2630,8 @@ function crearDinero(
                 "true";
 
 
-            dinero += 100;
+            dinero +=
+                100;
 
 
             dineroHTML.remove();
@@ -1834,16 +2642,10 @@ function crearDinero(
             );
 
 
-            // Comprobar si este era
-            // el último dinero pendiente.
             actualizarFinPorDinero();
         }
     );
 
-
-    // ================================
-    // AGREGAR DINERO
-    // ================================
 
     mostrador.appendChild(
         dineroHTML
@@ -1852,7 +2654,8 @@ function crearDinero(
 
     dineroClientes[
         numeroCliente
-    ] = true;
+    ] =
+        true;
 }
 
 
@@ -1867,22 +2670,8 @@ function hayDineroPendiente() {
             ".dinero-mesa"
         );
 
+
     return billetes.length > 0;
-}
-
-
-// ================================
-// CONTAR CLIENTES PROCESADOS
-// ================================
-
-function obtenerClientesProcesados() {
-
-    return (
-        pedidosCorrectos +
-        clientesSeFueron.filter(
-            estado => estado === true
-        ).length
-    );
 }
 
 
@@ -1893,10 +2682,12 @@ function obtenerClientesProcesados() {
 function comprobarFinDelNivel() {
 
     const clientesProcesados =
-        obtenerClientesProcesados();
+        pedidosCorrectos +
+        clientesSeFueron.filter(
+            estado => estado
+        ).length;
 
 
-    // Todavía faltan clientes
     if (
         clientesProcesados <
         totalClientes
@@ -1906,69 +2697,34 @@ function comprobarFinDelNivel() {
     }
 
 
-    // ========================================
-    // TODOS LOS CLIENTES FUERON PROCESADOS
-    // PERO TODAVÍA HAY DINERO PENDIENTE
-    // ========================================
-
     if (
         hayDineroPendiente()
     ) {
-
-        esperandoDinero =
-            true;
-
 
         clearInterval(
             temporizador
         );
 
+
         clearInterval(
             temporizadorPaciencia
         );
 
-        clearTimeout(
-            temporizadorQuemado
-        );
+
+        limpiarTemporizadoresCoccion();
 
 
-        btnCarne.disabled =
-            true;
-
-        btnPollo.disabled =
-            true;
-
-        btnQueso.disabled =
-            true;
-
-        btnCerrar.disabled =
-            true;
-
-        btnCocinar.disabled =
-            true;
-
-        btnSacar.disabled =
-            true;
-
-        btnEntregar.disabled =
-            true;
-
-        btnTirar.disabled =
-            true;
+        desactivarControles();
 
 
         mostrarMensaje(
-            "💰 ¡Recoge todo el dinero que dejaron los clientes para terminar el nivel!"
+            "💰 ¡Recoge todo el dinero que dejaron los clientes!"
         );
+
 
         return;
     }
 
-
-    // ========================================
-    // TODOS LOS CLIENTES PROCESADOS
-    // Y TODO EL DINERO RECOGIDO
-    // ========================================
 
     terminarNivel();
 }
@@ -1980,105 +2736,83 @@ function comprobarFinDelNivel() {
 
 function actualizarFinPorDinero() {
 
-    const clientesProcesados =
-        obtenerClientesProcesados();
-
-
-    if (
-        clientesProcesados <
-        totalClientes
-    ) {
-
-        return;
-    }
-
-
     if (
         hayDineroPendiente()
     ) {
 
-        esperandoDinero =
-            true;
-
-        mostrarMensaje(
-            "💰 ¡Recoge todo el dinero que dejaron los clientes!"
-        );
-
         return;
     }
 
 
-    // ========================================
-    // YA NO QUEDA DINERO
-    // ========================================
+    const clientesProcesados =
+        pedidosCorrectos +
+        clientesSeFueron.filter(
+            estado => estado
+        ).length;
 
-    esperandoDinero =
-        false;
 
-    terminarNivel();
+    if (
+        clientesProcesados >=
+        totalClientes
+    ) {
+
+        terminarNivel();
+    }
 }
 
 
 // ================================
-// REINICIAR EMPANADA
+// LIMPIAR TEMPORIZADORES DE COCCIÓN
 // ================================
 
-function reiniciarEmpanada() {
+function limpiarTemporizadoresCoccion() {
 
-    if (temporizadorQuemado) {
+    clearTimeout(temporizadorCoccion1);
+    clearTimeout(temporizadorCoccion2);
+    clearTimeout(temporizadorQuemado1);
+    clearTimeout(temporizadorQuemado2);
 
-        clearTimeout(
-            temporizadorQuemado
-        );
-
-        temporizadorQuemado =
-            null;
-    }
-
-
-    rellenoSeleccionado =
-        null;
-
-    empanadaCerrada =
-        false;
-
-    empanadaCocinando =
-        false;
-
-    empanadaLista =
-        false;
-
-    empanadaQuemada =
-        false;
+    temporizadorCoccion1 = null;
+    temporizadorCoccion2 = null;
+    temporizadorQuemado1 = null;
+    temporizadorQuemado2 = null;
+}
 
 
-    const proteina =
-        document.querySelector(
-            ".proteina-sobre-masa"
-        );
+// ================================
+// DESACTIVAR CONTROLES
+// ================================
 
-    if (proteina) {
-        proteina.remove();
-    }
+function desactivarControles() {
 
+    btnCarne.disabled =
+        true;
 
-    masa.style.display =
-        "flex";
+    btnPollo.disabled =
+        true;
 
-    empanada.style.display =
-        "none";
+    btnQueso.disabled =
+        true;
 
-    empanadaFinal.style.display =
-        "none";
+    btnPina.disabled =
+        true;
 
+    btnChampinon.disabled =
+        true;
 
     btnCerrar.disabled =
         true;
 
-    btnCocinar.disabled =
+    btnCocinar1.disabled =
         true;
 
-    btnSacar.disabled =
+    btnSacar1.disabled =
+        true;
+
+    btnCocinar2.disabled =
+        true;
+
+    btnSacar2.disabled =
         true;
 
     btnEntregar.disabled =
@@ -2096,14 +2830,14 @@ function reiniciarEmpanada() {
 function terminarNivel() {
 
     if (
-        nivelTerminado
+        document.querySelector(
+            ".pantalla-final"
+        )
     ) {
+
         return;
     }
 
-
-    esperandoDinero =
-        false;
 
     nivelTerminado =
         true;
@@ -2119,35 +2853,10 @@ function terminarNivel() {
     );
 
 
-    clearTimeout(
-        temporizadorQuemado
-    );
+    limpiarTemporizadoresCoccion();
 
 
-    btnCarne.disabled =
-        true;
-
-    btnPollo.disabled =
-        true;
-
-    btnQueso.disabled =
-        true;
-
-
-    btnCerrar.disabled =
-        true;
-
-    btnCocinar.disabled =
-        true;
-
-    btnSacar.disabled =
-        true;
-
-    btnEntregar.disabled =
-        true;
-
-    btnTirar.disabled =
-        true;
+    desactivarControles();
 
 
     mostrarMensaje(
@@ -2172,10 +2881,7 @@ function terminarNivel() {
 
 function actualizarPaciencia() {
 
-    if (
-        nivelTerminado ||
-        esperandoDinero
-    ) {
+    if (nivelTerminado) {
         return;
     }
 
@@ -2191,19 +2897,24 @@ function actualizarPaciencia() {
     ) {
 
         const numeroCliente =
-            clientesEnPantalla[posicion];
+            clientesEnPantalla[
+                posicion
+            ];
 
 
         if (
             numeroCliente ===
             undefined
         ) {
+
             continue;
         }
 
 
         const cliente =
-            clientesHTML[posicion];
+            clientesHTML[
+                posicion
+            ];
 
 
         if (!cliente) {
@@ -2216,6 +2927,7 @@ function actualizarPaciencia() {
                 "atendido"
             )
         ) {
+
             continue;
         }
 
@@ -2225,6 +2937,7 @@ function actualizarPaciencia() {
                 numeroCliente
             ]
         ) {
+
             continue;
         }
 
@@ -2258,9 +2971,8 @@ function actualizarPaciencia() {
                 posicion,
                 "😊"
             );
-        }
 
-        else if (
+        } else if (
             tiempoEsperando <
             tiempoEnojado
         ) {
@@ -2269,9 +2981,8 @@ function actualizarPaciencia() {
                 posicion,
                 "😐"
             );
-        }
 
-        else if (
+        } else if (
             tiempoEsperando <
             tiempoMuyEnojado
         ) {
@@ -2280,9 +2991,8 @@ function actualizarPaciencia() {
                 posicion,
                 "😠"
             );
-        }
 
-        else if (
+        } else if (
             tiempoEsperando <
             tiempoSeVa
         ) {
@@ -2291,9 +3001,8 @@ function actualizarPaciencia() {
                 posicion,
                 "😡"
             );
-        }
 
-        else {
+        } else {
 
             clienteSeVa(
                 posicion
@@ -2311,10 +3020,7 @@ function clienteSeVa(
     posicionVisual
 ) {
 
-    if (
-        nivelTerminado ||
-        esperandoDinero
-    ) {
+    if (nivelTerminado) {
         return;
     }
 
@@ -2346,7 +3052,8 @@ function clienteSeVa(
 
     clientesSeFueron[
         numeroCliente
-    ] = true;
+    ] =
+        true;
 
 
     const cliente =
@@ -2384,6 +3091,7 @@ function clienteSeVa(
         if (
             clientesEnPantalla.includes(i)
         ) {
+
             continue;
         }
 
@@ -2391,6 +3099,7 @@ function clienteSeVa(
         if (
             clientesSeFueron[i]
         ) {
+
             continue;
         }
 
@@ -2401,10 +3110,6 @@ function clienteSeVa(
         break;
     }
 
-
-    // ================================
-    // NO QUEDAN CLIENTES
-    // ================================
 
     if (
         siguienteVisible ===
@@ -2417,7 +3122,8 @@ function clienteSeVa(
 
         clientesEnPantalla[
             posicionVisual
-        ] = undefined;
+        ] =
+            undefined;
 
 
         comprobarFinDelNivel();
@@ -2437,10 +3143,7 @@ function clienteSeVa(
     setTimeout(
         function () {
 
-            if (
-                nivelTerminado ||
-                esperandoDinero
-            ) {
+            if (nivelTerminado) {
                 return;
             }
 
@@ -2459,7 +3162,8 @@ function clienteSeVa(
 
             dineroClientes[
                 siguienteVisible
-            ] = false;
+            ] =
+                false;
 
 
             cambiarPersonajeVisual(
@@ -2499,9 +3203,11 @@ function clienteSeVa(
 
             mostrarMensaje(
                 "👤 Llegó otro cliente: empanada de " +
-                pedidosClientes[
-                    siguienteVisible
-                ]
+                obtenerNombreRelleno(
+                    pedidosClientes[
+                        siguienteVisible
+                    ]
+                )
             );
 
         },
@@ -2514,14 +3220,11 @@ function clienteSeVa(
 // TEMPORIZADOR DE PACIENCIA
 // ================================
 
-const temporizadorPaciencia =
+temporizadorPaciencia =
     setInterval(
         function () {
 
-            if (
-                !nivelTerminado &&
-                !esperandoDinero
-            ) {
+            if (!nivelTerminado) {
 
                 actualizarPaciencia();
 
@@ -2540,16 +3243,12 @@ temporizador =
     setInterval(
         function () {
 
-            if (
-                nivelTerminado ||
-                esperandoDinero
-            ) {
+            if (nivelTerminado) {
                 return;
             }
 
 
             tiempo--;
-
 
             actualizarTiempo();
 
@@ -2558,54 +3257,22 @@ temporizador =
 
                 tiempo = 0;
 
-
                 actualizarTiempo();
-
 
                 clearInterval(
                     temporizador
                 );
 
-
-                clearTimeout(
-                    temporizadorQuemado
-                );
-
-
-                btnCarne.disabled =
-                    true;
-
-                btnPollo.disabled =
-                    true;
-
-                btnQueso.disabled =
-                    true;
-
-
-                btnCerrar.disabled =
-                    true;
-
-                btnCocinar.disabled =
-                    true;
-
-                btnSacar.disabled =
-                    true;
-
-                btnEntregar.disabled =
-                    true;
-
-                btnTirar.disabled =
-                    true;
-
-
-                nivelTerminado =
-                    true;
-
-
                 clearInterval(
                     temporizadorPaciencia
                 );
 
+                limpiarTemporizadoresCoccion();
+
+                nivelTerminado =
+                    true;
+
+                desactivarControles();
 
                 mostrarPantallaFinal();
             }
@@ -2622,7 +3289,7 @@ temporizador =
 function calcularEstrellas() {
 
     if (
-        pedidosCorrectos >= 6
+        pedidosCorrectos >= 12
     ) {
 
         return 3;
@@ -2630,7 +3297,7 @@ function calcularEstrellas() {
 
 
     if (
-        pedidosCorrectos >= 5
+        pedidosCorrectos >= 10
     ) {
 
         return 2;
@@ -2638,7 +3305,7 @@ function calcularEstrellas() {
 
 
     if (
-        pedidosCorrectos >= 4
+        pedidosCorrectos >= 9
     ) {
 
         return 1;
@@ -2650,45 +3317,47 @@ function calcularEstrellas() {
 
 
 // ================================
-// GUARDAR PARTIDA EN EL BACKEND
+// GUARDAR PARTIDA
 // ================================
 
 async function guardarPartida() {
 
-    // Evitar guardar dos veces
     if (partidaGuardada) {
-        return;
+        return partidaSuperada;
     }
+
+
+    if (guardandoPartida) {
+        return partidaSuperada;
+    }
+
+
+    guardandoPartida =
+        true;
 
 
     const token =
         localStorage.getItem("token");
 
 
-    // ================================
-    // COMPROBAR SESIÓN
-    // ================================
-
     if (!token) {
 
         console.error(
-            "No hay sesión iniciada. La partida no se puede guardar."
+            "❌ No se encontró el token de autenticación."
         );
 
-        return;
+        guardandoPartida =
+            false;
+
+        return null;
     }
 
 
-    // Marcar inmediatamente para evitar
-    // dobles llamadas al backend
-    partidaGuardada = true;
-
-
-    const estrellas =
-        calcularEstrellas();
-
-
     try {
+
+        // ========================================
+        // CONEXIÓN CON EL BACKEND
+        // ========================================
 
         const respuesta =
             await fetch(
@@ -2704,20 +3373,19 @@ async function guardarPartida() {
                             `Bearer ${token}`
                     },
 
-                    body: JSON.stringify({
+                    body:
+                        JSON.stringify({
+                            nivel: 4,
 
-                        nivel:
-                            nivelActual,
+                            clientesAtendidos:
+                                pedidosCorrectos,
 
-                        clientesAtendidos:
-                            pedidosCorrectos,
+                            estrellas:
+                                calcularEstrellas(),
 
-                        estrellas:
-                            estrellas,
-
-                        puntuacion:
-                            puntos
-                    })
+                            puntuacion:
+                                puntos
+                        })
                 }
             );
 
@@ -2727,121 +3395,109 @@ async function guardarPartida() {
 
 
         console.log(
-            "📦 Respuesta del servidor al guardar partida:",
+            "📦 Respuesta del servidor al guardar Nivel 4:",
             datos
         );
 
 
+        // ========================================
+        // COMPROBAR ERROR
+        // ========================================
+
         if (!respuesta.ok) {
 
-            console.error(
-                "❌ No se pudo guardar la partida:",
-                datos.mensaje
+            throw new Error(
+                datos.mensaje ||
+                "Error al guardar la partida."
             );
-
-            partidaGuardada = false;
-
-            return;
         }
 
 
-        console.log(
-            "✅ Partida guardada correctamente"
-        );
+        // ========================================
+        // COMPROBAR SI FUE SUPERADO
+        // ========================================
+
+        partidaSuperada =
+            datos.partida &&
+            datos.partida.superado === true;
+
+
+        partidaGuardada =
+            true;
 
 
         // ========================================
-        // RESULTADO REAL DEL BACKEND
+        // ACTUALIZAR USUARIO LOCAL
         // ========================================
 
         if (
-            datos.partida &&
-            typeof datos.partida.superado === "boolean"
+            datos.usuario &&
+            datos.usuario.nivelDesbloqueado
         ) {
 
-            partidaSuperada =
-                datos.partida.superado;
-
-        }
-
-        else if (
-            typeof datos.superado === "boolean"
-        ) {
-
-            partidaSuperada =
-                datos.superado;
-
-        }
-
-        else {
-
-            // Si el servidor confirmó que la partida
-            // se guardó pero una versión antigua
-            // de la respuesta no incluye "superado",
-            // usamos la meta oficial del nivel.
-
-            partidaSuperada =
-                pedidosCorrectos >=
-                metaPedidos;
-        }
-
-
-        console.log(
-            "🎯 Resultado final:",
-            partidaSuperada
-        );
-
-
-        // ================================
-        // ACTUALIZAR USUARIO LOCAL
-        // ================================
-
-        if (datos.usuario) {
-
-            const usuarioActual =
+            const usuarioGuardado =
                 JSON.parse(
                     localStorage.getItem(
                         "usuario"
                     )
-                ) || {};
+                );
 
 
-            const usuarioActualizado = {
+            if (usuarioGuardado) {
 
-                ...usuarioActual,
+                usuarioGuardado.nivelDesbloqueado =
+                    datos.usuario.nivelDesbloqueado;
 
-                username:
-                    datos.usuario.username,
 
-                nivelDesbloqueado:
-                    datos.usuario.nivelDesbloqueado
-            };
+                localStorage.setItem(
+                    "usuario",
+                    JSON.stringify(
+                        usuarioGuardado
+                    )
+                );
+            }
 
 
             localStorage.setItem(
-                "usuario",
-                JSON.stringify(
-                    usuarioActualizado
+                "nivelDesbloqueado",
+                String(
+                    datos.usuario.nivelDesbloqueado
                 )
             );
         }
 
+
+        console.log(
+            "✅ Nivel 4 guardado correctamente."
+        );
+
+
+        console.log(
+            "🎯 Nivel 4 superado:",
+            partidaSuperada
+        );
+
+
+        guardandoPartida =
+            false;
+
+
+        return partidaSuperada;
+
+
     } catch (error) {
 
         console.error(
-            "❌ Error al guardar la partida:",
+            "❌ Error al guardar Nivel 4:",
             error
         );
 
-        partidaGuardada = false;
 
-        // Como el juego ya terminó y la meta
-        // del Nivel 1 está definida en 4 pedidos,
-        // mantenemos el resultado correcto de
-        // la partida para mostrar la pantalla final.
-        partidaSuperada =
-            pedidosCorrectos >=
-            metaPedidos;
+        guardandoPartida =
+            false;
+
+
+        return null;
     }
 }
 
@@ -2865,9 +3521,6 @@ async function mostrarPantallaFinal() {
     nivelTerminado =
         true;
 
-    esperandoDinero =
-        false;
-
 
     clearInterval(
         temporizador
@@ -2879,34 +3532,140 @@ async function mostrarPantallaFinal() {
     );
 
 
-    clearTimeout(
-        temporizadorQuemado
+    limpiarTemporizadoresCoccion();
+
+
+    desactivarControles();
+
+
+    // ================================
+    // GUARDAR PARTIDA
+    // ================================
+
+    mostrarMensaje(
+        "💾 Guardando partida..."
     );
 
+
+    const resultadoGuardado =
+        await guardarPartida();
+
+
+    // ================================
+    // SI FALLÓ EL GUARDADO
+    // ================================
+
+    if (
+        resultadoGuardado === null
+    ) {
+
+        mostrarMensaje(
+            "⚠️ No se pudo guardar la partida."
+        );
+
+
+        const pantallaError =
+            document.createElement(
+                "div"
+            );
+
+
+        pantallaError.classList.add(
+            "pantalla-final"
+        );
+
+
+        pantallaError.innerHTML = `
+
+            <div class="panel-final">
+
+                <h1>⚠️ ERROR AL GUARDAR</h1>
+
+                <div class="resultado-final">
+                    No pudimos guardar tu resultado.
+                </div>
+
+                <div class="estadistica-final">
+                    🥟 Pedidos correctos:
+                    ${pedidosCorrectos}/13
+                </div>
+
+                <div class="estadistica-final">
+                    ⭐ Puntos:
+                    ${puntos}
+                </div>
+
+                <div class="botones-final">
+
+                    <button
+                        class="boton-final"
+                        id="btn-reintentar-guardado">
+                        🔄 INTENTAR DE NUEVO
+                    </button>
+
+                    <button
+                        class="boton-final"
+                        id="btn-volver-niveles-error">
+                        VOLVER AL MENÚ
+                    </button>
+
+                </div>
+
+            </div>
+
+        `;
+
+
+        document.body.appendChild(
+            pantallaError
+        );
+
+
+        document
+            .getElementById(
+                "btn-reintentar-guardado"
+            )
+            .addEventListener(
+                "click",
+                function () {
+
+                    pantallaError.remove();
+
+                    mostrarPantallaFinal();
+
+                }
+            );
+
+
+        document
+            .getElementById(
+                "btn-volver-niveles-error"
+            )
+            .addEventListener(
+                "click",
+                function () {
+
+                    window.location.href =
+                        "niveles.html";
+
+                }
+            );
+
+
+        return;
+    }
+
+
+    // ================================
+    // DATOS FINALES
+    // ================================
 
     const estrellas =
         calcularEstrellas();
 
 
-    // ========================================
-    // GUARDAR PARTIDA
-    // ========================================
-
-    await guardarPartida();
-
-
-    // ========================================
-    // RESULTADO FINAL
-    // ========================================
-
     const nivelSuperado =
-        partidaSuperada === true;
-
-
-    console.log(
-        "🏆 ¿Nivel superado?:",
-        nivelSuperado
-    );
+        partidaSuperada;
 
 
     // ================================
@@ -2928,58 +3687,39 @@ async function mostrarPantallaFinal() {
 
         <div class="panel-final">
 
-            <h1>🏆 NIVEL 1</h1>
+            <h1>🏆 NIVEL 4</h1>
 
             <div class="estrellas">
-
                 ${"⭐".repeat(estrellas)}
-
-                ${"☆".repeat(
-                    3 - estrellas
-                )}
-
+                ${"☆".repeat(3 - estrellas)}
             </div>
 
             <div class="estadistica-final">
-
                 💰 Dinero recolectado:
-
                 $${dinero}
-
             </div>
 
             <div class="estadistica-final">
-
                 ⭐ Puntos:
-
                 ${puntos}
-
             </div>
 
             <div class="estadistica-final">
-
                 🥟 Pedidos correctos:
-
-                ${pedidosCorrectos}/${totalClientes}
-
+                ${pedidosCorrectos}/13
             </div>
 
             <div class="estadistica-final">
-
                 🎯 Mínimo para pasar:
-
                 ${metaPedidos}
-
             </div>
 
             <div class="resultado-final">
-
                 ${
                     nivelSuperado
                         ? "🎉 ¡NIVEL SUPERADO!"
                         : "😢 ¡NIVEL NO SUPERADO!"
                 }
-
             </div>
 
             <div class="botones-final">
@@ -2987,21 +3727,12 @@ async function mostrarPantallaFinal() {
                 <button
                     class="boton-final"
                     id="btn-accion-final">
-
-                    ${
-                        nivelSuperado
-                            ? "➡️ SIGUIENTE NIVEL"
-                            : "🔄 REINTENTAR"
-                    }
-
                 </button>
 
                 <button
                     class="boton-final"
                     id="btn-volver-niveles">
-
                     VOLVER AL MENÚ
-
                 </button>
 
             </div>
@@ -3017,7 +3748,7 @@ async function mostrarPantallaFinal() {
 
 
     // ================================
-    // BOTÓN DE ACCIÓN FINAL
+    // BOTÓN PRINCIPAL
     // ================================
 
     const btnAccionFinal =
@@ -3026,29 +3757,41 @@ async function mostrarPantallaFinal() {
         );
 
 
-    btnAccionFinal.addEventListener(
-        "click",
-        function () {
+    if (nivelSuperado) {
 
-            if (nivelSuperado) {
+        btnAccionFinal.textContent =
+            "SIGUIENTE NIVEL";
+
+
+        btnAccionFinal.addEventListener(
+            "click",
+            function () {
 
                 window.location.href =
-                    "nivel2.html";
+                    "nivel5.html";
 
             }
+        );
 
-            else {
+    } else {
+
+        btnAccionFinal.textContent =
+            "🔄 REINTENTAR";
+
+
+        btnAccionFinal.addEventListener(
+            "click",
+            function () {
 
                 window.location.reload();
 
             }
-
-        }
-    );
+        );
+    }
 
 
     // ================================
-    // VOLVER AL MENÚ
+    // BOTÓN VOLVER AL MENÚ
     // ================================
 
     const btnVolverNiveles =
