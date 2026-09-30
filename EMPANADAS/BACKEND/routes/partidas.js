@@ -288,4 +288,52 @@ router.post("/", authMiddleware, async (req, res) => {
 });
 
 
+// ========================================
+// OBTENER HISTORIAL DE PARTIDAS DEL USUARIO
+// ========================================
+
+router.get("/", authMiddleware, async (req, res) => {
+
+    try {
+
+        const partidas =
+            await Partida.find({
+                usuarioId: req.usuario.usuarioId
+            })
+            .select(
+                "nivel estrellas clientesAtendidos puntuacion superado fecha"
+            )
+            .sort({
+                nivel: 1,
+                estrellas: -1,
+                fecha: -1
+            });
+
+
+        res.status(200).json({
+
+            partidas: partidas
+
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "Error al obtener partidas:",
+            error
+        );
+
+        res.status(500).json({
+
+            mensaje:
+                "Error interno del servidor"
+
+        });
+
+    }
+
+});
+
+
 module.exports = router;
