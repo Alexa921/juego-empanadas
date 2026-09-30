@@ -129,7 +129,7 @@
 
     z-index: 3;
 
-    bottom: -20px;
+    bottom: -40px;
     left: 50%;
 
     transform: translateX(-50%);
@@ -152,14 +152,48 @@
 ========================= */
 
 .estrella {
-    width: 28px;
-    height: 28px;
+    width: 55px;
+    height: 55px;
 
     object-fit: contain;
 
     display: block;
 
     pointer-events: none;
+}
+
+/* ========================================
+   AJUSTE INDIVIDUAL DE CADA ESTRELLA
+======================================== */
+
+.estrella-1 {
+    transform: translateY(0px);
+    transform: translateX(15px);
+}
+
+.estrella-2 {
+    transform: translateY(13px);
+}
+
+.estrella-3 {
+    transform: translateY(0px);
+    transform: translateX(-15px);
+}
+
+/* ========================================
+   ESTRELLAS NIVEL 1 - AJUSTE INDIVIDUAL
+======================================== */
+
+#estrellas-nivel-1 .estrella-1 {
+    transform: translate(14px, 7px);
+}
+
+#estrellas-nivel-1 .estrella-2 {
+    transform: translate(4px, 20px);
+}
+
+#estrellas-nivel-1 .estrella-3 {
+    transform: translate(-10px, 7px);
 }
 
 
@@ -179,7 +213,7 @@
 /* Efecto de nivel desbloqueado */
 
 .nivel.desbloqueado:hover {
-    transform: scale(1.1);
+    transform: scale(1.03);
 }
 
 
