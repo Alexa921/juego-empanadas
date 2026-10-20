@@ -668,7 +668,7 @@ function obtenerNombreProducto(
     ) {
 
         return (
-            "una empanada de " +
+            "Hey, friend, dame una empanada de " +
             obtenerNombreRelleno(
                 producto.relleno
             )

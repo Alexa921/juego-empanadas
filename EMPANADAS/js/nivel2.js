@@ -455,7 +455,7 @@ function actualizarPedidoCliente(
     if (textoPedido) {
 
         textoPedido.textContent =
-            "Una empanada de " +
+            "Órale, güey, dame una empanada de " +
             pedido;
     }
 

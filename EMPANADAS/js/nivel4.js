@@ -749,7 +749,7 @@ function actualizarPedidoCliente(
 
 
             texto.textContent =
-                "Una empanada de " +
+                "Konnichiwa, regálame una empanada de " +
                 obtenerNombreRelleno(
                     relleno
                 );
